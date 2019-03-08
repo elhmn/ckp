@@ -25,6 +25,7 @@ type	fCall func ([]string)
 //This is not great
 var		knownCommands = map[string]fCall {
 	"start": start,
+	"stop": stop,
 	"save": save,
 	"run": run,
 	"help": func ([]string) { },
