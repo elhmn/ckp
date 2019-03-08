@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Fri Mar 08 10:48:34 2019                        by bmbarga      */
+/*   Updated: Fri Mar 08 11:13:52 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ package main
 import	(
 	"fmt"
 	"flag"
+	yaml "gopkg.in/yaml.v2"
 // 	"errors"
 )
 
@@ -44,7 +45,10 @@ func	parseSaveFlags(args []string) (*sSaveFlag, *flag.FlagSet) {
 }
 
 func	saveScript(flags sSaveFlag) {
+	tmp, _ := yaml.Marshal("Hey") // Debug
+
 	fmt.Println(flags) // Debug
+	fmt.Println("tmp : " + string(tmp)) // Debug
 }
 
 func	save(args []string) {
@@ -66,6 +70,6 @@ func	save(args []string) {
 		}
 	}
 
-	fmt.Println(script) // Debug
+	fmt.Println("script : " + script) // Debug
 	saveScript(*flags)
 }
