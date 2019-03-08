@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Fri Mar 08 18:32:08 2019                        by bmbarga      */
+/*   Updated: Fri Mar 08 21:43:03 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,12 @@ type sScript struct {
 	Alias	string
 	Comment	string
 	Script	string
+}
+
+func (sc sScript) String() string {
+	return fmt.Sprintf("alias: %s\ncomment: %s\n" +
+	"script: \033[0;32m%s\033[0m\n",
+	sc.Alias, sc.Comment, sc.Script)
 }
 
 type tYaml map[string]sScript
@@ -82,7 +88,7 @@ func	saveScript(flags sSaveFlag, script string) {
 	//Append script yaml to the store file
 	scriptYaml, _ := yaml.Marshal(yml)
 	{
-		if _, err := file.WriteString("#script ===\n-" + string(scriptYaml));
+		if _, err := file.WriteString("#script ===\n" + string(scriptYaml));
 			err != nil {
 			log.Fatal(err)
 		}
