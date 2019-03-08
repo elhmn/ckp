@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Fri Mar 08 12:53:48 2019                        by bmbarga      */
+/*   Updated: Fri Mar 08 12:54:27 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ func	parseSaveFlags(args []string) (*sSaveFlag, *flag.FlagSet) {
 	fs.StringVar(&flags.file, "file", "", fUsage)
 	fs.StringVar(&flags.file, "f", "", fUsage + "(shorthand)")
 	fs.StringVar(&flags.alias, "alias", "", aUsage)
-	fs.StringVar(&flags.file, "a", "", aUsage + "(shorthand)")
+	fs.StringVar(&flags.alias, "a", "", aUsage + "(shorthand)")
 	fs.StringVar(&flags.comment, "comment", "", cUsage)
-	fs.StringVar(&flags.file, "m", "", cUsage + "(shorthand)")
+	fs.StringVar(&flags.comment, "m", "", cUsage + "(shorthand)")
 
 	return flags, fs
 }
