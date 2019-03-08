@@ -4,6 +4,8 @@
 *.dll
 *.so
 *.dylib
+codekeeper
+ckp
 
 # Test binary, build with `go test -c`
 *.test
