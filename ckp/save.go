@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Thu Mar 07 19:06:46 2019                        by bmbarga      */
+/*   Updated: Fri Mar 08 10:48:34 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,54 @@ import	(
 // 	"errors"
 )
 
-func	parseSaveFlags(args []string) {
+type sSaveFlag struct {
+	file	string
+	alias	string
+	comment	string
+}
+
+func	parseSaveFlags(args []string) (*sSaveFlag, *flag.FlagSet) {
+	flags := &sSaveFlag{ file: "" }
 	fs := flag.NewFlagSet(args[0], flag.ExitOnError)
-	var tmp string
-	fs.StringVar(&tmp, "file", "filePath", "-file=filePath")
-	fs.Parse(args[0:])
-	fmt.Println("tmp : ", tmp);
+	defer fs.Parse(args[1:])
+
+	fUsage := "get the script from a file"
+	aUsage := "add an alias to your script"
+	cUsage := "add a comment to your script"
+
+	fs.StringVar(&flags.file, "file", "", fUsage)
+	fs.StringVar(&flags.file, "f", "", fUsage + "(shorthand)")
+	fs.StringVar(&flags.alias, "alias", "", aUsage)
+	fs.StringVar(&flags.file, "a", "", aUsage + "(shorthand)")
+	fs.StringVar(&flags.comment, "comment", "", cUsage)
+	fs.StringVar(&flags.file, "m", "", cUsage + "(shorthand)")
+
+	return flags, fs
+}
+
+func	saveScript(flags sSaveFlag) {
+	fmt.Println(flags) // Debug
 }
 
 func	save(args []string) {
-	parseSaveFlags(args)
+	var script string
+	flags, fs := parseSaveFlags(args)
+	rest := fs.Args()
+
+	// Get script
+	{
+		if flags.file == "filePath" {
+			if len(rest) != 1 {
+				fmt.Println("Usage : save {script} ")
+				return
+			}
+			script = rest[0]
+		} else {
+			//Get script from file
+			script = flags.file
+		}
+	}
+
+	fmt.Println(script) // Debug
+	saveScript(*flags)
 }
