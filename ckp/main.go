@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created: Sun Mar  3 17:59:45 2019                        by elhmn        */
-/*   Updated: Thu Mar 07 15:30:21 2019                        by bmbarga      */
+/*   Updated: Fri Mar 08 07:26:51 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ package	main
 import	(
 	"fmt"
 	"os"
+	"os/user"
 	"errors"
 )
 
@@ -23,6 +24,7 @@ type	fCall func ([]string)
 
 //This is not great
 var		knownCommands = map[string]fCall {
+	"start": start,
 	"save": save,
 	"run": run,
 	"help": func ([]string) { },
@@ -34,8 +36,11 @@ var		knownCommands = map[string]fCall {
 
 //Environment variables
 var (
-	cpkPath = "~/.cpk"
-	cpkShellrc = "~/.zshrc"
+	usr, _ = user.Current()
+	ckpDir = usr.HomeDir + "/.ckp"
+	ckpRepoName = "repo"
+	ckpRemoteFileName = "remote"
+	ckpShellrc = usr.HomeDir + "/.zshrc"
 )
 
 func	getCommandCall(args []string) (fCall, error) {
@@ -62,5 +67,5 @@ func	main() {
 		return
 	}
 
-	call(os.Args[:1])
+	call(os.Args[1:])
 };
