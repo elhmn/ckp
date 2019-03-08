@@ -41,6 +41,7 @@ var (
 	ckpDir = usr.HomeDir + "/.ckp"
 	ckpRepoName = "repo"
 	ckpRemoteFileName = "remote"
+	ckpStoreFileName = "store.ckp"
 	ckpShellrc = usr.HomeDir + "/.zshrc"
 )
 

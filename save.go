@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Fri Mar 08 11:13:52 2019                        by bmbarga      */
+/*   Updated: Fri Mar 08 12:53:48 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@ package main
 import	(
 	"fmt"
 	"flag"
-	yaml "gopkg.in/yaml.v2"
+	"os"
+	"log"
+// 	yaml "gopkg.in/yaml.v2"
 // 	"errors"
 )
 
@@ -44,11 +46,27 @@ func	parseSaveFlags(args []string) (*sSaveFlag, *flag.FlagSet) {
 	return flags, fs
 }
 
-func	saveScript(flags sSaveFlag) {
-	tmp, _ := yaml.Marshal("Hey") // Debug
+func	saveScript(flags sSaveFlag, script string) {
+	storePath := ckpDir + "/" + ckpStoreFileName
 
+	fmt.Println("script : " + script) // Debug
+	fmt.Println("storePath : " + storePath) // Debug
+
+	file, err := os.OpenFile(storePath,
+		os.O_WRONLY | os.O_APPEND | os.O_CREATE, 0644)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	if err := file.Close(); err != nil {
+		log.Fatal(err)
+		return
+	}
+
+// 	tmp, _ := yaml.Marshal("Hey") // Debug
 	fmt.Println(flags) // Debug
-	fmt.Println("tmp : " + string(tmp)) // Debug
+// 	fmt.Println("tmp : " + string(tmp)) // Debug
 }
 
 func	save(args []string) {
@@ -70,6 +88,5 @@ func	save(args []string) {
 		}
 	}
 
-	fmt.Println("script : " + script) // Debug
-	saveScript(*flags)
+	saveScript(*flags, script)
 }
