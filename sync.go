@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sat Mar 09 08:12:40 2019                        by bmbarga      */
+/*   Updated: Sat Mar 09 18:14:21 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,12 @@ import	(
 // 	"os"
 	"log"
 	"io/ioutil"
+	yaml "gopkg.in/yaml.v2"
 // 	"errors"
 )
 
 type sSyncFlag struct {
-	All	string
+	alias	string
 }
 
 func	parseSyncFlags(args []string) (*sSyncFlag, *flag.FlagSet) {
@@ -31,15 +32,33 @@ func	parseSyncFlags(args []string) (*sSyncFlag, *flag.FlagSet) {
 	fs := flag.NewFlagSet(args[0], flag.ExitOnError)
 	defer fs.Parse(args[1:])
 
-	aUsage := "Sync all aliases scripts"
+	aUsage := "Sync script that has a specific alias"
 
-	fs.StringVar(&flags.All, "all", "", aUsage)
-	fs.StringVar(&flags.All, "a", "", aUsage + "(shorthand)")
+	fs.StringVar(&flags.alias, "alias", "", aUsage)
+	fs.StringVar(&flags.alias, "a", "", aUsage + "(shorthand)")
 	return flags, fs
 }
 
-func	syncCommand(flags sSyncFlag, remote string) {
+func	syncCommand(flags sSyncFlag) {
+	list := make(tYaml)
+
 	//Get script from yaml file
+	{
+		storePath := ckpDir + "/" + ckpStoreFileName
+
+		content, err := ioutil.ReadFile(storePath)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		//Get content on tYaml map
+		if err := yaml.Unmarshal(content, list); err != nil {
+			log.Fatal(err)
+			return
+		}
+	}
+
 	//Check if an alias exist in the yaml
 	//Get bash zsh sh files
 	//Add alias to user local zshrc bashrc or shrc
@@ -74,14 +93,7 @@ func	syncCommand(flags sSyncFlag, remote string) {
 }
 
 func	sync (args []string) {
-	flags, fs := parseSyncFlags(args)
-	rest := fs.Args()
+	flags, _ := parseSyncFlags(args)
 
-	if len(rest) == 0 {
-		fmt.Println("Usage : sync {alias}")
-		return
-	}
-
-	alias := rest[0]
-	syncCommand(*flags, alias)
+	syncCommand(*flags)
 }
