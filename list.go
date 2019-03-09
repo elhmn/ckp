@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Fri Mar 08 21:43:00 2019                        by bmbarga      */
+/*   Updated: Sat Mar 09 17:46:42 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,14 @@ func	listScripts(flags sListFlag) {
 	content, err := ioutil.ReadFile(storePath)
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 
 	//Get content on tYaml map
 	list := make(tYaml)
 	if err := yaml.Unmarshal(content, list); err != nil {
 		log.Fatal(err)
+		return
 	}
 
 	showList(list, flags)
