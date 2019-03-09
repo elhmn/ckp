@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created: Sun Mar  3 17:59:45 2019                        by elhmn        */
-/*   Updated: Sat Mar 09 07:38:16 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 05:08:36 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,18 @@ var		knownCommands = map[string]fCall {
 
 //Environment variables
 var (
-	usr, _ = user.Current()
-	ckpDir = usr.HomeDir + "/.ckp"
+	ckpUsr, _ = user.Current()
+	ckpDir = ckpUsr.HomeDir + "/.ckp"
 	ckpRepoName = "repo"
 	ckpRemoteFileName = "remote"
 	ckpStoreFileName = "store.ckp"
-	ckpShellrc = usr.HomeDir + "/.zshrc"
+	ckpAliasFile = "ckp_aliases"
+	ckpShellrc = ckpUsr.HomeDir + "/.zshrc"
+	ckpRcFiles = []string{
+		".zshrc",
+		".shrc",
+		".bashrc",
+	}
 )
 
 func	getCommandCall(args []string) (fCall, error) {

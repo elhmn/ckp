@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sat Mar 09 18:14:21 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 07:22:06 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@ package main
 import	(
 	"fmt"
 	"flag"
-	"os/exec"
-// 	"os"
+	"os"
 	"log"
 	"io/ioutil"
+	"bufio"
+	"strings"
+	"regexp"
 	yaml "gopkg.in/yaml.v2"
-// 	"errors"
 )
 
 type sSyncFlag struct {
@@ -55,40 +56,96 @@ func	syncCommand(flags sSyncFlag) {
 		//Get content on tYaml map
 		if err := yaml.Unmarshal(content, list); err != nil {
 			log.Fatal(err)
-			return
 		}
 	}
 
 	//Check if an alias exist in the yaml
-	//Get bash zsh sh files
-	//Add alias to user local zshrc bashrc or shrc
-	// if it does not exist in the file
+	{
+		//Open ckpAliasFile
+		aliasFilePath := ckpDir + "/" + ckpAliasFile
+		aliasFile, err := os.OpenFile(aliasFilePath,
+			os.O_RDWR | os.O_APPEND | os.O_CREATE, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer aliasFile.Close()
 
-	//Move to ckpPath and clone the folder there
-	cmd := exec.Command("bash", "-c", "echo I sync your script !")
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		log.Fatal(err)
-	}
+		//Get bash zsh sh files
+		RcFileLoop : for _, rc := range ckpRcFiles {
+			rcFilePath := ckpUsr.HomeDir + "/" + rc
+			source := "source " + aliasFilePath
 
-	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
-		return
-	}
+			rcFile, err := os.OpenFile(rcFilePath,
+				os.O_RDWR | os.O_APPEND, 0644)
+			if err != nil {
+				fmt.Println(err)
+				continue RcFileLoop
+			}
 
-	slurpErr, _ := ioutil.ReadAll(stderr)
-	fmt.Printf("%s", slurpErr)
+			scanner := bufio.NewScanner(rcFile)
+			for scanner.Scan() {
+				line := scanner.Text()
+				if strings.Contains(line, source) {
+					continue RcFileLoop
+				}
+			}
 
-	slurpOut, _ := ioutil.ReadAll(stdout)
-	fmt.Printf("%s", slurpOut)
+			if err := scanner.Err(); err != nil {
+				log.Fatal(err)
+			}
 
-	if err := cmd.Wait(); err != nil {
-		return
+			if _, err := rcFile.WriteString("source " + aliasFilePath + "\n");
+				err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("'%s' added to %s\n", source, rcFilePath)
+
+			rcFile.Close()
+		}
+
+		//Get lines
+		lines := []string{}
+		{
+			scanner := bufio.NewScanner(aliasFile)
+			for scanner.Scan() {
+				lines = append(lines, scanner.Text())
+			}
+			if err := scanner.Err(); err != nil {
+				log.Fatal(err)
+			}
+		}
+
+
+		AliasLoop : for id, elem := range list {
+			if elem.Alias != "" {
+				//Check if an alias already exist
+				{
+					for _, line := range lines {
+						if strings.Contains(line, elem.Alias) {
+						fmt.Printf("%s already exist in %s\n", elem.Alias, aliasFilePath)
+							continue AliasLoop
+						}
+					}
+				}
+
+				//Add alias to ckpAliasFile
+				{
+					re, err := regexp.Compile(`###(.*)###`)
+					if err != nil {
+						log.Fatal(err)
+					}
+					script := re.ReplaceAllString(elem.Script, `$1`)
+
+					if _, err := aliasFile.WriteString("alias " + elem.Alias + "='" + script + "'\n");
+						err != nil {
+						log.Fatal(err)
+					}
+				}
+
+				fmt.Printf("\033[0;33m%s\033[0m : \033[0;32m%s\033[0m : was added in %s !\n", id, elem.Alias, aliasFilePath) // Debug
+			}
+		}
 	}
 }
 
