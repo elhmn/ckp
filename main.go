@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created: Sun Mar  3 17:59:45 2019                        by elhmn        */
-/*   Updated: Fri Mar 08 18:55:47 2019                        by bmbarga      */
+/*   Updated: Sat Mar 09 07:35:48 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ var		knownCommands = map[string]fCall {
 	"stop": stop,
 	"save": save,
 	"run": run,
-	"help": func ([]string) { },
 	"sync": func ([]string) { } ,
 	"send": func ([]string) { },
 	"fetch": func ([]string) { },
