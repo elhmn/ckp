@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sun Mar 10 08:39:00 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 08:50:24 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,7 @@ func	syncCommand(flags sSyncFlag) {
 
 	//Get script from yaml file
 	{
-		storePath := ckpDir + "/" + ckpStoreFileName
-
-		content, err := ioutil.ReadFile(storePath)
+		content, err := ioutil.ReadFile(ckpStorePath)
 		if err != nil {
 			log.Fatal(err)
 		}

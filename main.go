@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created: Sun Mar  3 17:59:45 2019                        by elhmn        */
-/*   Updated: Sun Mar 10 05:08:36 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 08:48:13 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ var (
 	ckpStoreFileName = "store.ckp"
 	ckpAliasFile = "ckp_aliases"
 	ckpShellrc = ckpUsr.HomeDir + "/.zshrc"
+	ckpStorePath = ckpDir + "/" + ckpRepoName + "/" + ckpStoreFileName
 	ckpRcFiles = []string{
 		".zshrc",
 		".shrc",

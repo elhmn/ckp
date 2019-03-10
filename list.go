@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sat Mar 09 18:05:29 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 08:50:06 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,7 @@ func	showList(list tYaml, flags sListFlag) {
 }
 
 func	listScripts(flags sListFlag) {
-	storePath := ckpDir + "/" + ckpStoreFileName
-
-	content, err := ioutil.ReadFile(storePath)
+	content, err := ioutil.ReadFile(ckpStorePath)
 	if err != nil {
 		log.Fatal(err)
 	}

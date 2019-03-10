@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sun Mar 10 07:28:13 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 08:48:48 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,7 @@ func	parseSaveFlags(args []string) (*sSaveFlag, *flag.FlagSet) {
 
 func	saveScript(flags sSaveFlag, script string) {
 
-	storePath := ckpDir + "/" + ckpStoreFileName
-
-	file, err := os.OpenFile(storePath,
+	file, err := os.OpenFile(ckpStorePath,
 		os.O_WRONLY | os.O_APPEND | os.O_CREATE, 0644)
 	if err != nil {
 		log.Fatal(err)
