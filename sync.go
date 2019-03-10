@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sun Mar 10 07:22:08 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 08:39:00 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,40 +69,6 @@ func	syncCommand(flags sSyncFlag) {
 		}
 		defer aliasFile.Close()
 
-
-		//Get bash zsh sh files
-		RcFileLoop : for _, rc := range ckpRcFiles {
-			rcFilePath := ckpUsr.HomeDir + "/" + rc
-			source := "source " + aliasFilePath
-
-			rcFile, err := os.OpenFile(rcFilePath,
-				os.O_RDWR | os.O_APPEND, 0644)
-			if err != nil {
-				fmt.Println(err)
-				continue RcFileLoop
-			}
-
-			scanner := bufio.NewScanner(rcFile)
-			for scanner.Scan() {
-				line := scanner.Text()
-				if strings.Contains(line, source) {
-					continue RcFileLoop
-				}
-			}
-
-			if err := scanner.Err(); err != nil {
-				log.Fatal(err)
-			}
-
-			if _, err := rcFile.WriteString("source " + aliasFilePath + "\n");
-				err != nil {
-				log.Fatal(err)
-			}
-			fmt.Printf("'%s' added to %s\n", source, rcFilePath)
-
-			rcFile.Close()
-		}
-
 		//Get lines
 		lines := []string{}
 		{
@@ -115,14 +81,13 @@ func	syncCommand(flags sSyncFlag) {
 			}
 		}
 
-
 		AliasLoop : for id, elem := range list {
 			if elem.Alias != "" {
 				//Check if an alias already exist
 				{
 					for _, line := range lines {
 						if strings.Contains(line, elem.Alias) {
-						fmt.Printf("%s already exist in %s\n", elem.Alias, aliasFilePath)
+						fmt.Printf("\033[0;32m%s\033[0m already exist in %s\n", elem.Alias, aliasFilePath)
 							continue AliasLoop
 						}
 					}
@@ -144,6 +109,42 @@ func	syncCommand(flags sSyncFlag) {
 
 				fmt.Printf("\033[0;33m%s\033[0m : \033[0;32m%s\033[0m : was added in %s !\n", id, elem.Alias, aliasFilePath) // Debug
 			}
+		}
+
+		//Get bash zsh sh files
+		RcFileLoop : for _, rc := range ckpRcFiles {
+			rcFilePath := ckpUsr.HomeDir + "/" + rc
+			source := "source " + aliasFilePath
+			fmt.Println(rcFilePath) // Debug
+
+			rcFile, err := os.OpenFile(rcFilePath,
+				os.O_RDWR | os.O_APPEND, 0644)
+			if err != nil {
+				fmt.Println(err)
+				continue RcFileLoop
+			}
+
+			scanner := bufio.NewScanner(rcFile)
+			for scanner.Scan() {
+				line := scanner.Text()
+				if strings.Contains(line, source) {
+					rcFile.Close()
+					fmt.Printf("Run '\033[0;33msource %s' \033[0m to update your shell\n", rcFilePath)
+					continue RcFileLoop
+				}
+			}
+
+			if err := scanner.Err(); err != nil {
+				log.Fatal(err)
+			}
+
+			if _, err := rcFile.WriteString("source " + aliasFilePath + "\n");
+				err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("'%s' added to %s\n", source, rcFilePath)
+			fmt.Printf("Run '\033[0;33msource %s' \033[0m to update your shell", rcFilePath)
+			rcFile.Close()
 		}
 	}
 }
