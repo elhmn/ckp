@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sun Mar 10 07:22:06 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 07:22:08 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ func	syncCommand(flags sSyncFlag) {
 		content, err := ioutil.ReadFile(storePath)
 		if err != nil {
 			log.Fatal(err)
-			return
 		}
 
 		//Get content on tYaml map

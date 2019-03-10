@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Fri Mar 08 21:43:03 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 07:28:13 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ func	saveScript(flags sSaveFlag, script string) {
 		os.O_WRONLY | os.O_APPEND | os.O_CREATE, 0644)
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 
 	//Create a unique id for the script
@@ -96,7 +95,6 @@ func	saveScript(flags sSaveFlag, script string) {
 
 	if err := file.Close(); err != nil {
 		log.Fatal(err)
-		return
 	}
 }
 

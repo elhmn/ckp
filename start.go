@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Fri Mar 08 07:26:32 2019                        by bmbarga      */
+/*   Updated: Sun Mar 10 06:21:52 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ func	fetchRemoteRepository(flags sStartFlag, remote string) {
 		err := os.Mkdir(ckpDir, os.ModePerm)
 		if err != nil {
 			log.Fatal("Error : " + err.Error())
-			return
 		}
 		fmt.Println(ckpDir + " was created")
 	}
@@ -63,7 +62,6 @@ func	fetchRemoteRepository(flags sStartFlag, remote string) {
 
 	if err := cmd.Start(); err != nil {
 		log.Fatal(err)
-		return
 	}
 
 	slurpErr, _ := ioutil.ReadAll(stderr)

@@ -37,7 +37,6 @@ func	clearCpk(flags sStopFlag) {
 		err := os.RemoveAll(ckpDir)
 		if err != nil {
 			log.Fatal("Error : " + err.Error())
-			return
 		}
 		fmt.Println(ckpDir + " was removed")
 	}
