@@ -11,8 +11,49 @@ then fetch them from a server and maybe add them to an .*rc file when you need t
 
 Before installing `ckp` you will need to have the golang package installed follow this [instructions](https://golang.org/dl/)
 
+### Download
+
+Download the lastest version [here](https://github.com/elhmn/ckp/releases)
+
+Than copy the binary to your system binary `/bin` folder
+
+### Setup git repos
+
+* Create an empty git repository
+
+## Usage
+
+#### Initialize ckp
+
+This will create a `~/.ckp` folder
+
 ```
-go get github.com/elhmn/codekeeper/ckp
+ckp start [your-git-repo]
+```
+
+#### Save script
+
+This will record your scipt in ckp
+
+```
+ckp save -alias="sayHi" -comment="a script that says hi" 'echo sayHi'
+```
+
+#### Sync
+
+This command will add your aliases scripts to your `.rc` files
+
+```
+ckp sync
+```
+
+Note : don't forget to refresh your shell using `source ~/.rc`
+
+#### Send your scripts
+
+Now your scripts will be commited and pushed to your remote repo
+```
+ckp send
 ```
 
 ## Commands
