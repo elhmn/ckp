@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created: Sun Mar  3 17:59:45 2019                        by elhmn        */
-/*   Updated: Sun Mar 10 08:48:30 2019                        by bmbarga      */
+/*   Updated: Thu Mar 21 09:54:32 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,15 @@ var		knownCommands = map[string]fCall {
 	"start": start,
 	"stop": stop,
 	"save": save,
-	"run": run,
 	"sync": sync,
 	"send": send,
-	"fetch": func ([]string) { },
 	"list": list,
+	"help": help,
+}
+
+
+func	help(args []string) {
+	fmt.Println(ckpUsage)
 }
 
 //Environment variables
@@ -49,13 +53,26 @@ var (
 		".shrc",
 		".bashrc",
 	}
+	ckpUsage = `usage: ckp help commands
+
+A tool to manage your scripts.
+
+positional arguments:
+	{save,start,stop,sync,list}
+        start		Clone your remote solution repoitory and init ckp
+	stop		Remove ckp instance
+	save		Save your scripts locally
+	send		Send your local scripts to a remote server
+	sync		Add your aliased scripts to your local .rc file
+	list		List local scripts`
+
 )
 
 func	getCommandCall(args []string) (fCall, error) {
 	programName := args[0]
 
 	if l := len(args); l < 2 {
-		return nil, errors.New(programName + " must have at least 2 arguments")
+		return nil, errors.New(ckpUsage)
 	}
 
 	cmdName := args[1]
@@ -71,7 +88,7 @@ func	main() {
 	call, err := getCommandCall(os.Args)
 
 	if err != nil {
-		fmt.Println("Failed to parse command")
+		fmt.Println(err)
 		return
 	}
 
