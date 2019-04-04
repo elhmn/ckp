@@ -12,23 +12,23 @@
 
 package main
 
-import	(
-	"fmt"
-	"flag"
-	"os"
-	"log"
-	"io/ioutil"
+import (
 	"bufio"
-	"strings"
-	"regexp"
+	"flag"
+	"fmt"
 	yaml "gopkg.in/yaml.v2"
+	"io/ioutil"
+	"log"
+	"os"
+	"regexp"
+	"strings"
 )
 
 type sSyncFlag struct {
-	alias	string
+	alias string
 }
 
-func	parseSyncFlags(args []string) (*sSyncFlag, *flag.FlagSet) {
+func parseSyncFlags(args []string) (*sSyncFlag, *flag.FlagSet) {
 	flags := &sSyncFlag{}
 	fs := flag.NewFlagSet(args[0], flag.ExitOnError)
 	defer fs.Parse(args[1:])
@@ -36,11 +36,11 @@ func	parseSyncFlags(args []string) (*sSyncFlag, *flag.FlagSet) {
 	aUsage := "Sync script that has a specific alias"
 
 	fs.StringVar(&flags.alias, "alias", "", aUsage)
-	fs.StringVar(&flags.alias, "a", "", aUsage + "(shorthand)")
+	fs.StringVar(&flags.alias, "a", "", aUsage+"(shorthand)")
 	return flags, fs
 }
 
-func	syncCommand(flags sSyncFlag) {
+func syncCommand(flags sSyncFlag) {
 	list := make(tYaml)
 
 	//Get script from yaml file
@@ -61,7 +61,7 @@ func	syncCommand(flags sSyncFlag) {
 		//Open ckpAliasFile
 		aliasFilePath := ckpDir + "/" + ckpAliasFile
 		aliasFile, err := os.OpenFile(aliasFilePath,
-			os.O_RDWR | os.O_APPEND | os.O_CREATE, 0644)
+			os.O_RDWR|os.O_APPEND|os.O_CREATE, 0644)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -79,13 +79,14 @@ func	syncCommand(flags sSyncFlag) {
 			}
 		}
 
-		AliasLoop : for id, elem := range list {
+	AliasLoop:
+		for id, elem := range list {
 			if elem.Alias != "" {
 				//Check if an alias already exist
 				{
 					for _, line := range lines {
 						if strings.Contains(line, elem.Alias) {
-						fmt.Printf("\033[0;32m%s\033[0m already exist in %s\n", elem.Alias, aliasFilePath)
+							fmt.Printf("\033[0;32m%s\033[0m already exist in %s\n", elem.Alias, aliasFilePath)
 							continue AliasLoop
 						}
 					}
@@ -99,8 +100,7 @@ func	syncCommand(flags sSyncFlag) {
 					}
 					script := re.ReplaceAllString(elem.Script, `$1`)
 
-					if _, err := aliasFile.WriteString("alias " + elem.Alias + "='" + script + "'\n");
-						err != nil {
+					if _, err := aliasFile.WriteString("alias " + elem.Alias + "='" + script + "'\n"); err != nil {
 						log.Fatal(err)
 					}
 				}
@@ -110,13 +110,14 @@ func	syncCommand(flags sSyncFlag) {
 		}
 
 		//Get bash zsh sh files
-		RcFileLoop : for _, rc := range ckpRcFiles {
+	RcFileLoop:
+		for _, rc := range ckpRcFiles {
 			rcFilePath := ckpUsr.HomeDir + "/" + rc
 			source := "source " + aliasFilePath
 			fmt.Println(rcFilePath) // Debug
 
 			rcFile, err := os.OpenFile(rcFilePath,
-				os.O_RDWR | os.O_APPEND, 0644)
+				os.O_RDWR|os.O_APPEND, 0644)
 			if err != nil {
 				fmt.Println(err)
 				continue RcFileLoop
@@ -136,8 +137,7 @@ func	syncCommand(flags sSyncFlag) {
 				log.Fatal(err)
 			}
 
-			if _, err := rcFile.WriteString("source " + aliasFilePath + "\n");
-				err != nil {
+			if _, err := rcFile.WriteString("source " + aliasFilePath + "\n"); err != nil {
 				log.Fatal(err)
 			}
 			fmt.Printf("'%s' added to %s\n", source, rcFilePath)
@@ -147,7 +147,7 @@ func	syncCommand(flags sSyncFlag) {
 	}
 }
 
-func	sync (args []string) {
+func sync(args []string) {
 	flags, _ := parseSyncFlags(args)
 
 	syncCommand(*flags)

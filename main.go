@@ -10,45 +10,44 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-package	main
+package main
 
-import	(
+import (
+	"errors"
 	"fmt"
 	"os"
 	"os/user"
-	"errors"
 )
 
 //type for command function call
-type	fCall func ([]string)
+type fCall func([]string)
 
 //This is not great
-var		knownCommands = map[string]fCall {
+var knownCommands = map[string]fCall{
 	"start": start,
-	"stop": stop,
-	"save": save,
-	"sync": sync,
-	"send": send,
-	"list": list,
-	"help": help,
+	"stop":  stop,
+	"save":  save,
+	"sync":  sync,
+	"send":  send,
+	"list":  list,
+	"help":  help,
 }
 
-
-func	help(args []string) {
+func help(args []string) {
 	fmt.Println(ckpUsage)
 }
 
 //Environment variables
 var (
-	ckpUsr, _ = user.Current()
-	ckpDir = ckpUsr.HomeDir + "/.ckp"
-	ckpRepoName = "repo"
+	ckpUsr, _         = user.Current()
+	ckpDir            = ckpUsr.HomeDir + "/.ckp"
+	ckpRepoName       = "repo"
 	ckpRemoteFileName = "remote"
-	ckpStoreFileName = "store.ckp"
-	ckpAliasFile = "ckp_aliases"
-	ckpShellrc = ckpUsr.HomeDir + "/.zshrc"
-	ckpStorePath = ckpDir + "/" + ckpRepoName + "/" + ckpStoreFileName
-	ckpRcFiles = []string{
+	ckpStoreFileName  = "store.ckp"
+	ckpAliasFile      = "ckp_aliases"
+	ckpShellrc        = ckpUsr.HomeDir + "/.zshrc"
+	ckpStorePath      = ckpDir + "/" + ckpRepoName + "/" + ckpStoreFileName
+	ckpRcFiles        = []string{
 		".zshrc",
 		".shrc",
 		".bashrc",
@@ -65,10 +64,9 @@ positional arguments:
 	send		Send your local scripts to a remote server
 	sync		Add your aliased scripts to your local .rc file
 	list		List local scripts`
-
 )
 
-func	getCommandCall(args []string) (fCall, error) {
+func getCommandCall(args []string) (fCall, error) {
 	programName := args[0]
 
 	if l := len(args); l < 2 {
@@ -84,7 +82,7 @@ func	getCommandCall(args []string) (fCall, error) {
 	return call, nil
 }
 
-func	main() {
+func main() {
 	call, err := getCommandCall(os.Args)
 
 	if err != nil {
@@ -93,4 +91,4 @@ func	main() {
 	}
 
 	call(os.Args[1:])
-};
+}

@@ -12,12 +12,12 @@
 
 package main
 
-import	(
+import (
 	"fmt"
-// 	"flag"
-// 	"errors"
+	// 	"flag"
+	// 	"errors"
 )
 
-func	run(args []string) {
-	fmt.Println("I run you"); // Debug
+func run(args []string) {
+	fmt.Println("I run you") // Debug
 }

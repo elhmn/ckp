@@ -12,19 +12,19 @@
 
 package main
 
-import	(
-	"fmt"
+import (
 	"flag"
+	"fmt"
 	"io/ioutil"
-	"os/exec"
 	"log"
-// 	"errors"
+	"os/exec"
+	// 	"errors"
 )
 
 type sSendFlag struct {
 }
 
-func	parseSendFlags(args []string) (*sSendFlag, *flag.FlagSet) {
+func parseSendFlags(args []string) (*sSendFlag, *flag.FlagSet) {
 	flags := &sSendFlag{}
 	fs := flag.NewFlagSet(args[0], flag.ExitOnError)
 	defer fs.Parse(args[1:])
@@ -32,7 +32,7 @@ func	parseSendFlags(args []string) (*sSendFlag, *flag.FlagSet) {
 	return flags, fs
 }
 
-func	sendScript(flags sSendFlag) {
+func sendScript(flags sSendFlag) {
 	remoteFilePath := ckpDir + "/" + ckpRemoteFileName
 	repoDir := ckpDir + "/" + ckpRepoName
 	content, err := ioutil.ReadFile(remoteFilePath)
@@ -41,11 +41,11 @@ func	sendScript(flags sSendFlag) {
 	}
 	remote := string(content)
 
-	cmd := exec.Command("bash", "-c", "cd " + repoDir +
-		" && git add " + ckpStoreFileName +
-		" && git commit -m 'Update " + ckpStoreFileName + "'" +
-		" && git push origin master " +
-		"&& echo " + remote)
+	cmd := exec.Command("bash", "-c", "cd "+repoDir+
+		" && git add "+ckpStoreFileName+
+		" && git commit -m 'Update "+ckpStoreFileName+"'"+
+		" && git push origin master "+
+		"&& echo "+remote)
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
 		log.Fatal(err)
@@ -71,7 +71,7 @@ func	sendScript(flags sSendFlag) {
 	}
 }
 
-func	send(args []string) {
+func send(args []string) {
 	flags, _ := parseSendFlags(args)
 
 	sendScript(*flags)

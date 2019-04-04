@@ -12,19 +12,18 @@
 
 package main
 
-
-import	(
-	"fmt"
+import (
 	"flag"
-	"os"
+	"fmt"
 	"log"
-// 	"errors"
+	"os"
+	// 	"errors"
 )
 
 type sStopFlag struct {
 }
 
-func	parseStopFlags(args []string) (*sStopFlag, *flag.FlagSet) {
+func parseStopFlags(args []string) (*sStopFlag, *flag.FlagSet) {
 	flags := &sStopFlag{}
 	fs := flag.NewFlagSet(args[0], flag.ExitOnError)
 	defer fs.Parse(args[1:])
@@ -32,7 +31,7 @@ func	parseStopFlags(args []string) (*sStopFlag, *flag.FlagSet) {
 	return flags, fs
 }
 
-func	clearCpk(flags sStopFlag) {
+func clearCpk(flags sStopFlag) {
 	if _, err := os.Stat(ckpDir); err == nil {
 		err := os.RemoveAll(ckpDir)
 		if err != nil {
@@ -44,7 +43,7 @@ func	clearCpk(flags sStopFlag) {
 	//And cleanup other things
 }
 
-func	stop (args []string) {
+func stop(args []string) {
 	flags, _ := parseStopFlags(args)
 
 	clearCpk(*flags)

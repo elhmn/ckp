@@ -12,20 +12,20 @@
 
 package main
 
-import	(
-	"fmt"
+import (
 	"flag"
-	"regexp"
+	"fmt"
+	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
-	yaml "gopkg.in/yaml.v2"
-// 	"errors"
+	"regexp"
+	// 	"errors"
 )
 
 type sListFlag struct {
 }
 
-func	parseListFlags(args []string) (*sListFlag, *flag.FlagSet) {
+func parseListFlags(args []string) (*sListFlag, *flag.FlagSet) {
 	flags := &sListFlag{}
 	fs := flag.NewFlagSet(args[0], flag.ExitOnError)
 	defer fs.Parse(args[1:])
@@ -33,21 +33,21 @@ func	parseListFlags(args []string) (*sListFlag, *flag.FlagSet) {
 	return flags, fs
 }
 
-func	showList(list tYaml, flags sListFlag) {
+func showList(list tYaml, flags sListFlag) {
 	re, err := regexp.Compile(`###(.*)###`)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for id, elem :=  range list {
-		fmt.Println("\033[0;33mid: " + id + "\033[0m");
+	for id, elem := range list {
+		fmt.Println("\033[0;33mid: " + id + "\033[0m")
 		script := re.ReplaceAllString(elem.String(), `$1`)
 		fmt.Println(script)
 	}
 }
 
-func	listScripts(flags sListFlag) {
+func listScripts(flags sListFlag) {
 	content, err := ioutil.ReadFile(ckpStorePath)
 	if err != nil {
 		log.Fatal(err)
@@ -62,7 +62,7 @@ func	listScripts(flags sListFlag) {
 	showList(list, flags)
 }
 
-func	list (args []string) {
+func list(args []string) {
 	flags, _ := parseListFlags(args)
 
 	listScripts(*flags)

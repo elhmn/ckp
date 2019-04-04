@@ -12,20 +12,20 @@
 
 package main
 
-import	(
-	"fmt"
+import (
 	"flag"
-	"os/exec"
-	"os"
-	"log"
+	"fmt"
 	"io/ioutil"
-// 	"errors"
+	"log"
+	"os"
+	"os/exec"
+	// 	"errors"
 )
 
 type sStartFlag struct {
 }
 
-func	parseStartFlags(args []string) (*sStartFlag, *flag.FlagSet) {
+func parseStartFlags(args []string) (*sStartFlag, *flag.FlagSet) {
 	flags := &sStartFlag{}
 	fs := flag.NewFlagSet(args[0], flag.ExitOnError)
 	defer fs.Parse(args[1:])
@@ -33,7 +33,7 @@ func	parseStartFlags(args []string) (*sStartFlag, *flag.FlagSet) {
 	return flags, fs
 }
 
-func	fetchRemoteRepository(flags sStartFlag, remote string) {
+func fetchRemoteRepository(flags sStartFlag, remote string) {
 	//Create ckpPath file if it does not exist
 	if _, err := os.Stat(ckpDir); os.IsNotExist(err) {
 		err := os.Mkdir(ckpDir, os.ModePerm)
@@ -45,10 +45,10 @@ func	fetchRemoteRepository(flags sStartFlag, remote string) {
 
 	//Move to ckpPath and clone the folder there
 	cmd := exec.Command("bash", "-c",
-		"cd " + ckpDir +
-		" && " +
-		"git clone " + remote + " " + ckpRepoName +
-		" && echo " + remote + " > " + ckpRemoteFileName)
+		"cd "+ckpDir+
+			" && "+
+			"git clone "+remote+" "+ckpRepoName+
+			" && echo "+remote+" > "+ckpRemoteFileName)
 
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
@@ -75,7 +75,7 @@ func	fetchRemoteRepository(flags sStartFlag, remote string) {
 	}
 }
 
-func	start (args []string) {
+func start(args []string) {
 	flags, fs := parseStartFlags(args)
 	rest := fs.Args()
 
