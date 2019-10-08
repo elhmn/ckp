@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sun Mar 10 08:50:06 2019                        by bmbarga      */
+/*   Updated: Tue Oct 08 18:39:17 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"regexp"
+	"sort"
+
+	yaml "gopkg.in/yaml.v2"
 	// 	"errors"
 )
 
@@ -40,9 +42,15 @@ func showList(list tYaml, flags sListFlag) {
 		log.Fatal(err)
 	}
 
-	for id, elem := range list {
+	var ids []string
+	for id := range list {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+
+	for _, id := range ids {
 		fmt.Println("\033[0;33mid: " + id + "\033[0m")
-		script := re.ReplaceAllString(elem.String(), `$1`)
+		script := re.ReplaceAllString(list[id].String(), `$1`)
 		fmt.Println(script)
 	}
 }
