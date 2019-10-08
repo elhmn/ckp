@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created: Sun Mar 10 08:45:07 2019                        by elhmn        */
-/*   Updated: Sun Mar 10 09:56:18 2019                        by bmbarga      */
+/*   Updated: Tue Oct 08 18:16:17 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ import (
 )
 
 type sSendFlag struct {
+	Force bool
 }
 
 func parseSendFlags(args []string) (*sSendFlag, *flag.FlagSet) {
@@ -29,6 +30,10 @@ func parseSendFlags(args []string) (*sSendFlag, *flag.FlagSet) {
 	fs := flag.NewFlagSet(args[0], flag.ExitOnError)
 	defer fs.Parse(args[1:])
 
+	fUsage := "send force"
+
+	fs.Bool("force", false, fUsage)
+	fs.Bool("f", false, fUsage+"(shorthand)")
 	return flags, fs
 }
 
@@ -40,11 +45,15 @@ func sendScript(flags sSendFlag) {
 		log.Fatal(err)
 	}
 	remote := string(content)
-
+	force := ""
+	if flags.Force {
+		fmt.Println("Force ") // Debug
+		force = " --force "
+	}
 	cmd := exec.Command("bash", "-c", "cd "+repoDir+
 		" && git add "+ckpStoreFileName+
 		" && git commit -m 'Update "+ckpStoreFileName+"'"+
-		" && git push origin master "+
+		" && git push "+force+" origin master "+
 		"&& echo "+remote)
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
