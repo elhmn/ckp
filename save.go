@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Sun Mar 10 08:48:48 2019                        by bmbarga      */
+/*   Updated: Wed Oct 09 11:49:02 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/rs/xid"
-	yaml "gopkg.in/yaml.v2"
 	"log"
 	"os"
+	"time"
+
+	"github.com/rs/xid"
+	yaml "gopkg.in/yaml.v2"
 	// 	"errors"
 )
 
@@ -26,18 +28,25 @@ type sSaveFlag struct {
 	File    string
 	Alias   string
 	Comment string
+	Group   string
 }
 
 type sScript struct {
-	Alias   string
-	Comment string
-	Script  string
+	File         string
+	Alias        string
+	Comment      string
+	Script       string
+	Group        string
+	CreationTime string
 }
 
 func (sc sScript) String() string {
 	return fmt.Sprintf("alias: %s\ncomment: %s\n"+
-		"script: \033[0;32m%s\033[0m\n",
-		sc.Alias, sc.Comment, sc.Script)
+		"script: \033[0;32m%s\033[0m\n"+
+		"file: \033[0;32m%s\033[0m\n"+
+		"group: \033[0;32m%s\033[0m\n"+
+		"creationTime: \033[0;32m%s\033[0m\n",
+		sc.Alias, sc.Comment, sc.Script, sc.File, sc.Group, sc.CreationTime)
 }
 
 type tYaml map[string]sScript
@@ -50,6 +59,7 @@ func parseSaveFlags(args []string) (*sSaveFlag, *flag.FlagSet) {
 	fUsage := "get the script from a file"
 	aUsage := "add an alias to your script"
 	cUsage := "add a comment to your script"
+	gUsage := "specify a group for your script"
 
 	fs.StringVar(&flags.File, "file", "", fUsage)
 	fs.StringVar(&flags.File, "f", "", fUsage+"(shorthand)")
@@ -57,6 +67,8 @@ func parseSaveFlags(args []string) (*sSaveFlag, *flag.FlagSet) {
 	fs.StringVar(&flags.Alias, "a", "", aUsage+"(shorthand)")
 	fs.StringVar(&flags.Comment, "comment", "", cUsage)
 	fs.StringVar(&flags.Comment, "m", "", cUsage+"(shorthand)")
+	fs.StringVar(&flags.Group, "group", "", gUsage)
+	fs.StringVar(&flags.Group, "g", "", gUsage+"(shorthand)")
 
 	return flags, fs
 }
@@ -76,9 +88,12 @@ func saveScript(flags sSaveFlag, script string) {
 	yml := make(tYaml)
 	{
 		yml[guid.String()] = sScript{
-			Comment: flags.Comment,
-			Alias:   flags.Alias,
-			Script:  "###" + script + "###",
+			CreationTime: time.Now().String(),
+			Comment:      flags.Comment,
+			Alias:        flags.Alias,
+			File:         flags.File,
+			Group:        flags.Group,
+			Script:       "###" + script + "###",
 		}
 	}
 
@@ -96,23 +111,11 @@ func saveScript(flags sSaveFlag, script string) {
 }
 
 func save(args []string) {
-	var script string
+	script := ""
 	flags, fs := parseSaveFlags(args)
 	rest := fs.Args()
-
-	// Get script
-	{
-		if flags.File == "" {
-			if len(rest) != 1 {
-				fmt.Println("Usage : save {script} ")
-				return
-			}
-			script = rest[0]
-		} else {
-			//Get script from file
-			script = flags.File
-		}
+	if len(rest) >= 1 {
+		script = rest[0]
 	}
-
 	saveScript(*flags, script)
 }
