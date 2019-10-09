@@ -6,7 +6,7 @@
 /*             <nleme@live.fr>                                                */
 /*                                                                            */
 /*   Created:                                                 by elhmn        */
-/*   Updated: Wed Oct 09 11:49:02 2019                        by bmbarga      */
+/*   Updated: Wed Oct 09 12:10:18 2019                        by bmbarga      */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/rs/xid"
@@ -108,6 +109,13 @@ func saveScript(flags sSaveFlag, script string) {
 	if err := file.Close(); err != nil {
 		log.Fatal(err)
 	}
+
+	//Show successfull message (must be replaced)
+	fmt.Printf("New code entry successfully saved:\n\n")
+	re, err := regexp.Compile(`###(.*)###`)
+	fmt.Println("\033[0;33mid: " + guid.String() + "\033[0m")
+	output := re.ReplaceAllString(yml[guid.String()].String(), `$1`)
+	fmt.Println(output)
 }
 
 func save(args []string) {
