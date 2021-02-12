@@ -1,6 +1,6 @@
 module github.com/elhmn/ckp
 
-go 1.12
+go 1.15
 
 require (
 	github.com/rs/xid v1.2.1

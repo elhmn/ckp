@@ -75,7 +75,6 @@ func parseSaveFlags(args []string) (*sSaveFlag, *flag.FlagSet) {
 }
 
 func saveScript(flags sSaveFlag, script string) {
-
 	file, err := os.OpenFile(ckpStorePath,
 		os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
 	if err != nil {
