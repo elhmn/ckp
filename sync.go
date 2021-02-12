@@ -1,27 +1,16 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*  sync.go                                                                   */
-/*                                                                            */
-/*   By: elhmn <www.elhmn.com>                                                */
-/*             <nleme@live.fr>                                                */
-/*                                                                            */
-/*   Created:                                                 by elhmn        */
-/*   Updated: Sun Mar 10 08:50:24 2019                        by bmbarga      */
-/*                                                                            */
-/* ************************************************************************** */
-
 package main
 
 import (
 	"bufio"
 	"flag"
 	"fmt"
-	yaml "gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
 	"strings"
+
+	yaml "gopkg.in/yaml.v2"
 )
 
 type sSyncFlag struct {
