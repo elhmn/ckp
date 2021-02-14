@@ -11,7 +11,7 @@ import (
 )
 
 func newInitCommand(conf config.Config) *cobra.Command {
-	initCommand := &cobra.Command{
+	command := &cobra.Command{
 		Use:   "init <storage_repository>",
 		Short: "init initialise ckp storage repository",
 		Long: `init will initialise a storage repository
@@ -30,7 +30,7 @@ func newInitCommand(conf config.Config) *cobra.Command {
 		},
 	}
 
-	return initCommand
+	return command
 }
 
 func initCommand(conf config.Config, remoteStorageFolder string) error {
