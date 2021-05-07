@@ -17,151 +17,47 @@ Download the lastest version [here](https://github.com/elhmn/ckp/releases)
 
 Than copy the binary to your system binary `/bin` folder
 
-### Setup git repos
+### Setup git a repos
 
-* Create an empty git repository
+* Create an empty git repository to store your scripts and solutions we higly recommaned to keep this repository private
 
 ## Usage
 
-#### Initialize ckp
+#### How to `Init`-ialize `ckp`
 
-This will create a `~/.ckp` folder
-
-```
-ckp start [your-git-repo]
-```
-
-#### Save script
-
-This will record your scipt in ckp
+This will create a `~/.ckp` folder, and clone the repository your scripts will be stored
 
 ```
-ckp save -alias="sayHi" -comment="a script that says hi" 'echo sayHi'
+ckp init [your-git-repo]
 ```
 
-#### Sync
+#### How to `Store` your scripts and solutions
 
-This command will add your aliases scripts to your `.rc` files
+The `store` command will record your script in ckp
 
 ```
-ckp sync
+ckp store -alias="sayHi" -comment="a script that says hi" 'echo sayHi'
 ```
 
-Note : don't forget to refresh your shell using `source ~/.rc`
+#### How to `Push` your scripts to your remote solution repository
 
-#### Send your scripts
+The `push` command will be commited and pushed to your remote repoitory
 
-Now your scripts will be commited and pushed to your remote repo
 ```
-ckp send
+ckp push
+```
+
+#### How to `Pull` your scripts from your remote solution repository
+
+The `pull` command will be commited and pushed to your remote repoitory
+
+```
+ckp push
 ```
 
 ## Commands
 
-`ckp` provides several commands to manage your scripts.
-
-```
-$ ckp help
-usage: ckp help commands
-
-A tool to manage your scripts.
-
-positional arguments:
-	{save,start,stop,sync,list}
-        start		Clone your remote solution repoitory and init ckp
-	stop		Remove ckp instance
-	save		Save your scripts locally
-	send		Send your local scripts to a remote server
-	sync		Add your aliased scripts to your local .rc file
-	list		List local scripts
-```
-
-### Start
-
-Use `start` command to save your scrips locally
-
-```
-$ ckp start
-usage: ckp start remote
-
-Clone your scripts from the remote git repository and stores
-it into $HOME/.ckp/repo folder.
-
-Example : ckp start https://github/username/reponame
-
-Positional arguments:
-	[remote]	Is an alias to the remote server you want send your scripts
-```
-
-
-### Stop
-
-Use `stop` command to remove your `.ckp` folder
-
-```
-$ ckp stop
-usage: ckp stop
-
-Simply remove $HOME/.ckp folder for the moment
-
-```
-
-### List
-
-Use `list` to list your local scripts 
-
-```
-$ ckp list
-usage: ckp list
-
-list your local scripts
-
-```
-
-### Sync
-
-Use `sync` to add your local scripts to your .zhshrc OR .bashrc OR .shrc 
-
-```
-$ ckp sync
-usage: ckp sync
-
-Sync will add all your aliases (scripts recorded with the -alias flag) script to your .rc files
-
-Note : Don't forget to reload your .rc files use `source yourcfilepath`
-```
-
-
-### Send
-
-Use `send` to commit and push your scripts to your remote git repository 
-
-```
-$ ckp send
-usage: ckp send
-
-Sync add, commit and push your local changes to the remote git repository
-```
-
-### Save
-
-Use `save` command to save your scrips locally
-
-```
-$ ckp save
-usage: ckp save [-flags] script
-
-Saves your scripts locally.
-
-Example : ckp save -alias=sayHi -comment="script that says hi" "echo Hi"
-
-Flags:
-
-	-file		(not yet implemented) Specify the file you want your scripts to be copied from
-	-alias		Add an alias to your script
-			The alias will be used by sync to alias your script in your .rc files 
-	-comment	Add a comment to your script
-```
+TODO...
 
 ## License
 
