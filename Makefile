@@ -25,6 +25,10 @@ endif
 lint: check-lint
 	golangci-lint run ./... --timeout 15m0s
 
+## install-hooks: install hooks
+install-hooks: check-lint
+	ln -s $(PWD)/githooks/pre-push .git/hooks/pre-push
+
 ## clean: remove releases
 clean:
 	rm -rf $(APPNAME)
