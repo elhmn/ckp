@@ -10,7 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newInitCommand(conf config.Config) *cobra.Command {
+//NewInitCommand create new cobra command for the init command
+func NewInitCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "init <storage_repository>",
 		Short: "init initialise ckp storage repository",

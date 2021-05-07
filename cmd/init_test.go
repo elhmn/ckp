@@ -1,4 +1,4 @@
-package main
+package cmd_test
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/elhmn/ckp/cmd"
+	"github.com/elhmn/ckp/internal/config"
 )
 
 type MockedExec struct {
@@ -34,20 +35,19 @@ func (ex MockedExec) CreateFolderIfDoesNotExist(dir string) error {
 //TestInitCommand test the `ckp init` command
 func TestInitCommand(t *testing.T) {
 	fakeRemoteFolder := "https://github.com/elhmn/fakefolder"
-	initCommand := "init"
 
 	t.Run("initialised successfully", func(t *testing.T) {
-		conf := newConfig()
+		conf := config.NewDefaultConfig()
 		conf.Exec = &MockedExec{}
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
-		command := cmd.NewCKPCommand(conf)
+		command := cmd.NewInitCommand(conf)
 		//Set writer
 		command.SetOutput(conf.OutWriter)
 
 		//Set args
-		command.SetArgs([]string{initCommand, fakeRemoteFolder})
+		command.SetArgs([]string{fakeRemoteFolder})
 
 		err := command.Execute()
 		if err != nil {
@@ -56,7 +56,7 @@ func TestInitCommand(t *testing.T) {
 	})
 
 	t.Run("failed to create folder", func(t *testing.T) {
-		conf := newConfig()
+		conf := config.NewDefaultConfig()
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 		exp := "failed to create folder"
@@ -66,12 +66,12 @@ func TestInitCommand(t *testing.T) {
 			CreateFolderIfDoesNotExistErrorOutput: fmt.Errorf(exp),
 		}
 
-		command := cmd.NewCKPCommand(conf)
+		command := cmd.NewInitCommand(conf)
 		//Set writer
 		command.SetOutput(conf.OutWriter)
 
 		//Set args
-		command.SetArgs([]string{initCommand, fakeRemoteFolder})
+		command.SetArgs([]string{fakeRemoteFolder})
 
 		err := command.Execute()
 		if err != nil {
@@ -85,7 +85,7 @@ func TestInitCommand(t *testing.T) {
 	})
 
 	t.Run("failed to clone remote repository", func(t *testing.T) {
-		conf := newConfig()
+		conf := config.NewDefaultConfig()
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 		exp := "failed to clone remote repository"
@@ -95,12 +95,12 @@ func TestInitCommand(t *testing.T) {
 			DoGitCloneErrorOutput: fmt.Errorf(exp),
 		}
 
-		command := cmd.NewCKPCommand(conf)
+		command := cmd.NewInitCommand(conf)
 		//Set writer
 		command.SetOutput(conf.OutWriter)
 
 		//Set args
-		command.SetArgs([]string{initCommand, fakeRemoteFolder})
+		command.SetArgs([]string{fakeRemoteFolder})
 
 		err := command.Execute()
 		if err != nil {

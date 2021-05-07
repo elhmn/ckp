@@ -2,6 +2,7 @@ package config
 
 import (
 	"io"
+	"os"
 
 	"github.com/elhmn/ckp/internal/exec"
 )
@@ -15,4 +16,15 @@ type Config struct {
 	//io Writers useful for testing
 	OutWriter io.Writer
 	ErrWriter io.Writer
+}
+
+//NewDefaultConfig creates a new default config
+func NewDefaultConfig() Config {
+	return Config{
+		Exec:             exec.NewExec(),
+		OutWriter:        os.Stdout,
+		ErrWriter:        os.Stderr,
+		CKPDir:           ".ckp",
+		CKPStorageFolder: "repo",
+	}
 }

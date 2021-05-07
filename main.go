@@ -5,21 +5,10 @@ import (
 
 	"github.com/elhmn/ckp/cmd"
 	"github.com/elhmn/ckp/internal/config"
-	"github.com/elhmn/ckp/internal/exec"
 )
 
-func newConfig() config.Config {
-	return config.Config{
-		Exec:             exec.NewExec(),
-		OutWriter:        os.Stdout,
-		ErrWriter:        os.Stderr,
-		CKPDir:           ".ckp",
-		CKPStorageFolder: "repo",
-	}
-}
-
 func main() {
-	conf := newConfig()
+	conf := config.NewDefaultConfig()
 	command := cmd.NewCKPCommand(conf)
 
 	err := command.Execute()

@@ -13,6 +13,6 @@ func NewCKPCommand(config config.Config) *cobra.Command {
 		Long:  `ckp is a tool that helps you save and fetch the bash scripts you use frequently`,
 	}
 
-	ckpCommand.AddCommand(newInitCommand(config))
+	ckpCommand.AddCommand(NewInitCommand(config))
 	return ckpCommand
 }
