@@ -10,35 +10,13 @@ import (
 	"github.com/elhmn/ckp/internal/config"
 )
 
-type MockedExec struct {
-	RunErrorOutput error
-	RunOutput      []byte
-
-	DoGitCloneErrorOutput error
-	DoGitCloneOutput      string
-
-	CreateFolderIfDoesNotExistErrorOutput error
-}
-
-func (ex MockedExec) Run(dir string, command string, args ...string) ([]byte, error) {
-	return ex.RunOutput, ex.RunErrorOutput
-}
-
-func (ex MockedExec) DoGitClone(dir string, args ...string) (string, error) {
-	return ex.DoGitCloneOutput, ex.DoGitCloneErrorOutput
-}
-
-func (ex MockedExec) CreateFolderIfDoesNotExist(dir string) error {
-	return ex.CreateFolderIfDoesNotExistErrorOutput
-}
-
 //TestInitCommand test the `ckp init` command
 func TestInitCommand(t *testing.T) {
 	fakeRemoteFolder := "https://github.com/elhmn/fakefolder"
 
 	t.Run("initialised successfully", func(t *testing.T) {
 		conf := config.NewDefaultConfig()
-		conf.Exec = &MockedExec{}
+		conf.Exec = &cmd.MockedExec{}
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -62,7 +40,7 @@ func TestInitCommand(t *testing.T) {
 		exp := "failed to create folder"
 
 		//Setup for failure
-		conf.Exec = &MockedExec{
+		conf.Exec = &cmd.MockedExec{
 			CreateFolderIfDoesNotExistErrorOutput: fmt.Errorf(exp),
 		}
 
@@ -91,7 +69,7 @@ func TestInitCommand(t *testing.T) {
 		exp := "failed to clone remote repository"
 
 		//Setup for failure
-		conf.Exec = &MockedExec{
+		conf.Exec = &cmd.MockedExec{
 			DoGitCloneErrorOutput: fmt.Errorf(exp),
 		}
 
