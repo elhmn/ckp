@@ -20,3 +20,28 @@ func TestGenerateIdempotentID(t *testing.T) {
 		assert.NotEqual(t, id1, id2)
 	})
 }
+
+func TestEntryAlreadyExist(t *testing.T) {
+	t.Run("returns true when entry already exist", func(t *testing.T) {
+		existingID := "my-id"
+		s := store.Store{
+			Scripts: []store.Script{
+				store.Script{ID: existingID},
+			},
+		}
+
+		assert.Equal(t, true, s.EntryAlreadyExist(existingID))
+	})
+
+	t.Run("returns false when entry does not already exist", func(t *testing.T) {
+		nonExistingID := "my-new-id"
+		existingID := "my-id"
+		s := store.Store{
+			Scripts: []store.Script{
+				store.Script{ID: existingID},
+			},
+		}
+
+		assert.Equal(t, false, s.EntryAlreadyExist(nonExistingID))
+	})
+}
