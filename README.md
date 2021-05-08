@@ -39,6 +39,12 @@ The `store code` command will store your script as a code entry in ckp
 ckp store code 'echo say hi!' --alias="sayHi" --comment="a script that says hi"
 ```
 
+The `store solution` command will store your script as a solution entry in ckp
+
+```
+ckp store solution 'https://career-ladders.dev/engineering/' --comment="carreer ladders"
+```
+
 #### How to `Push` your scripts to your remote solution repository
 
 The `push` command will be commited and pushed to your remote repoitory
