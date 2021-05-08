@@ -28,15 +28,15 @@ Than copy the binary to your system binary `/bin` folder
 This will create a `~/.ckp` folder, and clone the repository your scripts will be stored
 
 ```
-ckp init [your-git-repo]
+ckp init <your-git-repo>
 ```
 
 #### How to `Store` your scripts and solutions
 
-The `store` command will record your script in ckp
+The `store code` command will store your script as a code entry in ckp
 
 ```
-ckp store -alias="sayHi" -comment="a script that says hi" 'echo sayHi'
+ckp store code 'echo say hi!' --alias="sayHi" --comment="a script that says hi"
 ```
 
 #### How to `Push` your scripts to your remote solution repository
