@@ -36,6 +36,8 @@ func NewStoreCodeCommand(conf config.Config) *cobra.Command {
 		},
 	}
 
+	command.PersistentFlags().StringP("alias", "a", "", `ckp store -a <alias>`)
+
 	return command
 }
 
