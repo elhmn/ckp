@@ -17,7 +17,7 @@ import (
 //NewStoreCodeCommand stores everything that written after --code or --solution flag
 func NewStoreCodeCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
-		Use:     "code [your_code]",
+		Use:     "code <your_code>",
 		Aliases: []string{"c"},
 		Short:   "store code will store your code",
 		Long: `store code will store your code in your solution repository
