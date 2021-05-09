@@ -33,7 +33,7 @@ func TestStoreSolutionCommand(t *testing.T) {
 		}
 
 		got := writer.String()
-		exp := "Your code was successfully stored!\n"
+		exp := "Your solution was successfully stored!\n"
 		assert.Equal(t, exp, got)
 
 		deleteFolder(conf)

@@ -38,7 +38,7 @@ func NewStoreSolutionCommand(conf config.Config) *cobra.Command {
 func storeSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	cmd.Flags().Parse(args)
 	flags := cmd.Flags()
-	code := strings.Join(args, " ")
+	solution := strings.Join(args, " ")
 
 	storeFile, err := config.GetStoreFilePath(conf)
 	if err != nil {
@@ -60,7 +60,7 @@ func storeSolutionCommand(cmd *cobra.Command, args []string, conf config.Config)
 		return fmt.Errorf("failed to write to file %s: %s", tempFile, err)
 	}
 
-	script, err := createNewSolutionScriptEntry(code, flags)
+	script, err := createNewSolutionScriptEntry(solution, flags)
 	if err != nil {
 		return fmt.Errorf("failed to create new script entry: %s", err)
 	}
@@ -92,11 +92,11 @@ func storeSolutionCommand(cmd *cobra.Command, args []string, conf config.Config)
 		return fmt.Errorf("failed to delete file %s: %s", tempFile, err)
 	}
 
-	fmt.Fprintln(conf.OutWriter, "Your code was successfully stored!")
+	fmt.Fprintln(conf.OutWriter, "Your solution was successfully stored!")
 	return nil
 }
 
-//createNewSolutionScriptEntry return a new code Script entry
+//createNewSolutionScriptEntry return a new solution entry
 func createNewSolutionScriptEntry(solution string, flags *flag.FlagSet) (store.Script, error) {
 	timeNow := time.Now()
 
