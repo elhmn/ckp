@@ -115,6 +115,7 @@ func listScripts(scripts []store.Script, isCode, isSolution bool, limit int) str
 			list += getField("  Comment", s.Comment)
 			list += getField("  Code", s.Code.Content)
 		}
+		list += "\n"
 	}
 	return list
 }
