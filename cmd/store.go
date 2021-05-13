@@ -26,7 +26,7 @@ func NewStoreCommand(conf config.Config) *cobra.Command {
 	command.AddCommand(NewStoreSolutionCommand(conf))
 
 	//Set flags
-	command.PersistentFlags().StringP("comment", "c", "", `ckp store -c <comment>`)
+	command.PersistentFlags().StringP("comment", "m", "", `ckp store -m <comment>`)
 	command.PersistentFlags().StringP("path", "p", "", `ckp store -p <path_to_your_code_or_solution>`)
 
 	return command
