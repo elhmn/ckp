@@ -33,16 +33,13 @@ type Script struct {
 }
 
 type Solution struct {
-	Content  string `json:"content,omitempty" yaml:"content,omitempty"`
-	FilePath string `json:"filepath,omitempty" yaml:"filepath,omitempty"`
+	Content string `json:"content,omitempty" yaml:"content,omitempty"`
 }
 
 type Code struct {
 	Content string `json:"content,omitempty" yaml:"content,omitempty"`
 	//Alias is the alias defined for the bash script in the rc file reference
 	Alias string `json:"alias,omitempty" yaml:"alias,omitempty"`
-
-	FilePath string `json:"filepath,omitempty" yaml:"filepath,omitempty"`
 }
 
 //EntryAlreadyExist checks that a script entry of `id` already exist in the store
