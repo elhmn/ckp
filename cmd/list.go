@@ -82,16 +82,24 @@ func listCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 func listScripts(scripts []store.Script, isCode, isSolution bool, limit int64) string {
 	list := ""
 	for _, s := range scripts {
-		list += fmt.Sprintf("ID: %s\n", s.ID)
-		list += fmt.Sprintf("CreationTime: %s\n", s.CreationTime.Format(time.RFC1123))
-		list += fmt.Sprintf("UpdateTime: %s\n", s.UpdateTime.Format(time.RFC1123))
-
 		//if the script is a solution
 		if s.Solution.Content != "" {
+			if isCode {
+				continue
+			}
+			list += fmt.Sprintf("ID: %s\n", s.ID)
+			list += fmt.Sprintf("CreationTime: %s\n", s.CreationTime.Format(time.RFC1123))
+			list += fmt.Sprintf("UpdateTime: %s\n", s.UpdateTime.Format(time.RFC1123))
 			list += fmt.Sprintf("  Type: Solution\n")
 			list += fmt.Sprintf("  Comment: %s\n", s.Comment)
 			list += fmt.Sprintf("  Solution: %s\n", s.Solution.Content)
 		} else {
+			if isSolution {
+				continue
+			}
+			list += fmt.Sprintf("ID: %s\n", s.ID)
+			list += fmt.Sprintf("CreationTime: %s\n", s.CreationTime.Format(time.RFC1123))
+			list += fmt.Sprintf("UpdateTime: %s\n", s.UpdateTime.Format(time.RFC1123))
 			list += fmt.Sprintf("  Type: Code\n")
 			list += fmt.Sprintf("  Alias: %s\n", s.Code.Alias)
 			list += fmt.Sprintf("  Comment: %s\n", s.Comment)
