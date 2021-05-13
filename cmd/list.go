@@ -87,23 +87,15 @@ func listScripts(scripts []store.Script, isCode, isSolution bool, limit int64) s
 		list += fmt.Sprintf("UpdateTime: %s\n", s.UpdateTime.Format(time.RFC1123))
 
 		//if the script is a solution
-		if s.Solution.Content != "" || s.Solution.FilePath != "" {
+		if s.Solution.Content != "" {
 			list += fmt.Sprintf("  Type: Solution\n")
 			list += fmt.Sprintf("  Comment: %s\n", s.Comment)
 			list += fmt.Sprintf("  Solution: %s\n", s.Solution.Content)
-
-			if s.Solution.FilePath != "" {
-				list += fmt.Sprintf("  FilePath: %s\n", s.Solution.FilePath)
-			}
 		} else {
 			list += fmt.Sprintf("  Type: Code\n")
 			list += fmt.Sprintf("  Alias: %s\n", s.Code.Alias)
 			list += fmt.Sprintf("  Comment: %s\n", s.Comment)
 			list += fmt.Sprintf("  Code: %s\n", s.Code.Content)
-
-			if s.Code.FilePath != "" {
-				list += fmt.Sprintf("  FilePath: %s\n", s.Code.FilePath)
-			}
 		}
 		list += "\n"
 	}

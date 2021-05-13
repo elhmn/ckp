@@ -132,9 +132,8 @@ func createNewCodeScriptEntry(code string, flags *flag.FlagSet) (store.Script, e
 		CreationTime: timeNow,
 		UpdateTime:   timeNow,
 		Code: store.Code{
-			Content:  code,
-			Alias:    alias,
-			FilePath: path,
+			Content: code,
+			Alias:   alias,
 		},
 	}, nil
 }

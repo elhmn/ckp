@@ -122,8 +122,7 @@ func createNewSolutionScriptEntry(solution string, flags *flag.FlagSet) (store.S
 		CreationTime: timeNow,
 		UpdateTime:   timeNow,
 		Solution: store.Solution{
-			Content:  solution,
-			FilePath: path,
+			Content: solution,
 		},
 	}, nil
 }
