@@ -37,7 +37,7 @@ func NewListCommand(conf config.Config) *cobra.Command {
 		},
 	}
 
-	command.PersistentFlags().Int64P("limit", "l", 10, `ckp list --limit 20`)
+	command.PersistentFlags().IntP("limit", "l", 10, `ckp list --limit 20`)
 	command.PersistentFlags().BoolP("code", "c", false, `ckp list --code`)
 	command.PersistentFlags().BoolP("solution", "s", false, `ckp list --solution`)
 
@@ -49,7 +49,7 @@ func listCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	flags := cmd.Flags()
 
 	//Get data from flags
-	limit, err := flags.GetInt64("limit")
+	limit, err := flags.GetInt("limit")
 	if err != nil {
 		return fmt.Errorf("could not parse `limit` flag: %s", err)
 	}
@@ -79,33 +79,42 @@ func listCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	return nil
 }
 
-func listScripts(scripts []store.Script, isCode, isSolution bool, limit int64) string {
+func getField(field, value string) string {
+	if value != "" {
+		return fmt.Sprintf("%s: %s\n", field, value)
+	}
+	return ""
+}
+
+func listScripts(scripts []store.Script, isCode, isSolution bool, limit int) string {
 	list := ""
-	for _, s := range scripts {
+	size := len(scripts)
+
+	for i := 0; i < limit && i < size; i++ {
+		s := scripts[i]
 		//if the script is a solution
 		if s.Solution.Content != "" {
 			if isCode {
 				continue
 			}
-			list += fmt.Sprintf("ID: %s\n", s.ID)
-			list += fmt.Sprintf("CreationTime: %s\n", s.CreationTime.Format(time.RFC1123))
-			list += fmt.Sprintf("UpdateTime: %s\n", s.UpdateTime.Format(time.RFC1123))
+			list += getField("ID", s.ID)
+			list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
+			list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
 			list += fmt.Sprintf("  Type: Solution\n")
-			list += fmt.Sprintf("  Comment: %s\n", s.Comment)
-			list += fmt.Sprintf("  Solution: %s\n", s.Solution.Content)
+			list += getField("  Comment", s.Comment)
+			list += getField("  Solution", s.Solution.Content)
 		} else {
 			if isSolution {
 				continue
 			}
-			list += fmt.Sprintf("ID: %s\n", s.ID)
-			list += fmt.Sprintf("CreationTime: %s\n", s.CreationTime.Format(time.RFC1123))
-			list += fmt.Sprintf("UpdateTime: %s\n", s.UpdateTime.Format(time.RFC1123))
+			list += getField("ID", s.ID)
+			list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
+			list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
 			list += fmt.Sprintf("  Type: Code\n")
-			list += fmt.Sprintf("  Alias: %s\n", s.Code.Alias)
-			list += fmt.Sprintf("  Comment: %s\n", s.Comment)
-			list += fmt.Sprintf("  Code: %s\n", s.Code.Content)
+			list += getField("  Alias", s.Code.Alias)
+			list += getField("  Comment", s.Comment)
+			list += getField("  Code", s.Code.Content)
 		}
-		list += "\n"
 	}
 	return list
 }
