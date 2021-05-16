@@ -32,6 +32,35 @@ type Script struct {
 	Code         Code      `json:"code,omitempty" yaml:"code,omitempty"`
 }
 
+func getField(field, value string) string {
+	if value != "" {
+		return fmt.Sprintf("%s: %s\n", field, value)
+	}
+	return ""
+}
+
+func (s Script) String() string {
+	list := ""
+	if s.Solution.Content != "" {
+		list += getField("ID", s.ID)
+		list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
+		list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
+		list += fmt.Sprintf("  Type: Solution\n")
+		list += getField("  Comment", s.Comment)
+		list += getField("  Solution", s.Solution.Content)
+	} else {
+		list += getField("ID", s.ID)
+		list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
+		list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
+		list += fmt.Sprintf("  Type: Code\n")
+		list += getField("  Alias", s.Code.Alias)
+		list += getField("  Comment", s.Comment)
+		list += getField("  Code", s.Code.Content)
+	}
+
+	return list
+}
+
 type Solution struct {
 	Content string `json:"content,omitempty" yaml:"content,omitempty"`
 }
