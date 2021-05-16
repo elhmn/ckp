@@ -49,6 +49,16 @@ func getTemplates() *promptui.SelectTemplates {
 	}
 }
 
+func doesScriptContain(script store.Script, input string) bool {
+	code := strings.Replace(strings.ToLower(script.Code.Content), " ", "", -1)
+	solution := strings.Replace(strings.ToLower(script.Solution.Content), " ", "", -1)
+	comment := strings.Replace(strings.ToLower(script.Comment), " ", "", -1)
+	alias := strings.Replace(strings.ToLower(script.Code.Alias), " ", "", -1)
+	content := fmt.Sprintf("%s %s %s %s", code, solution, comment, alias)
+	input = strings.Replace(strings.ToLower(input), " ", "", -1)
+	return strings.Contains(content, input)
+}
+
 func findCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	//get store data
 	storeFile, err := config.GetStoreFilePath(conf)
@@ -64,15 +74,7 @@ func findCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	scripts := storeData.Scripts
 	searchScript := func(input string, index int) bool {
 		s := scripts[index]
-
-		code := strings.Replace(strings.ToLower(s.Code.Content), " ", "", -1)
-		solution := strings.Replace(strings.ToLower(s.Solution.Content), " ", "", -1)
-		comment := strings.Replace(strings.ToLower(s.Comment), " ", "", -1)
-		alias := strings.Replace(strings.ToLower(s.Code.Alias), " ", "", -1)
-		content := fmt.Sprintf("%s %s %s %s", code, solution, comment, alias)
-		input = strings.Replace(strings.ToLower(input), " ", "", -1)
-
-		return strings.Contains(content, input)
+		return doesScriptContain(s, input)
 	}
 
 	prompt := promptui.Select{
