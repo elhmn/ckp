@@ -80,7 +80,7 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 
 	//Save the new `Store` struct in the store file
 	if err = storeData.SaveStore(storeFile); err != nil {
-		//if we failed to write the store file then we readd the file to its original content
+		//if we failed to write the store file then we restore the file to its original content
 		if err1 := ioutil.WriteFile(storeFile, storeBytes, 0666); err1 != nil {
 			return fmt.Errorf("failed to write to file %s: %s", storeFile, err)
 		}
