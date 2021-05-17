@@ -43,7 +43,7 @@ func deleteFolder(conf config.Config) error {
 	return os.RemoveAll(fmt.Sprintf("%s/%s", home, conf.CKPDir))
 }
 
-func TestStoreCodeCommand(t *testing.T) {
+func TestAddCodeCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
 		conf := createConfig()
 		setupFolder(conf)
@@ -51,7 +51,7 @@ func TestStoreCodeCommand(t *testing.T) {
 		conf.OutWriter = writer
 
 		commandName := "code"
-		command := cmd.NewStoreCommand(conf)
+		command := cmd.NewAddCommand(conf)
 		//Set writer
 		command.SetOutput(conf.OutWriter)
 
@@ -69,7 +69,7 @@ func TestStoreCodeCommand(t *testing.T) {
 		}
 
 		got := writer.String()
-		exp := "Your code was successfully stored!\n"
+		exp := "Your code was successfully added!\n"
 		assert.Equal(t, exp, got)
 
 		deleteFolder(conf)
