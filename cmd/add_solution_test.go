@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStoreSolutionCommand(t *testing.T) {
+func TestAddSolutionCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
 		conf := createConfig()
 		setupFolder(conf)
@@ -16,7 +16,7 @@ func TestStoreSolutionCommand(t *testing.T) {
 		conf.OutWriter = writer
 
 		commandName := "solution"
-		command := cmd.NewStoreCommand(conf)
+		command := cmd.NewAddCommand(conf)
 		//Set writer
 		command.SetOutput(conf.OutWriter)
 
@@ -33,7 +33,7 @@ func TestStoreSolutionCommand(t *testing.T) {
 		}
 
 		got := writer.String()
-		exp := "Your solution was successfully stored!\n"
+		exp := "Your solution was successfully added!\n"
 		assert.Equal(t, exp, got)
 
 		deleteFolder(conf)
