@@ -24,6 +24,7 @@ func NewAddCommand(conf config.Config) *cobra.Command {
 	//Add commands
 	command.AddCommand(NewAddCodeCommand(conf))
 	command.AddCommand(NewAddSolutionCommand(conf))
+	command.AddCommand(NewAddHistoryCommand(conf))
 
 	//Set flags
 	command.PersistentFlags().StringP("comment", "m", "", `ckp add -m <comment>`)
