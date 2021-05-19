@@ -1,0 +1,6 @@
+: 1602405531:0;cat /dev/null > ~/.bash_history \
+
+: 1602405534:0;history
+: 1602405620:0;echo "je suis con"; echo "tu es con"
+
+: 1602406506:0;echo "je suis con end of line"

@@ -9,7 +9,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-const (
+var (
 	BashHistoryFile = ".bash_history"
 	ZshHistoryFile  = ".zsh_history"
 )
@@ -42,7 +42,11 @@ func getBashHistoryRecords() ([]string, error) {
 		return nil, err
 	}
 
-	records := strings.Split(data, "\n")
+	f := func(c rune) bool {
+		return c == '\n'
+	}
+
+	records := strings.FieldsFunc(data, f)
 	return records, nil
 }
 
@@ -52,7 +56,10 @@ func getZshHistoryRecords() ([]string, error) {
 		return nil, err
 	}
 
-	lines := strings.Split(data, "\n")
+	f := func(c rune) bool {
+		return c == '\n'
+	}
+	lines := strings.FieldsFunc(data, f)
 	records := []string{}
 	for _, l := range lines {
 		recordStartIndex := strings.Index(l, ";")
