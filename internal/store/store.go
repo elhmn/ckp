@@ -120,8 +120,8 @@ func LoadStore(filepath string) (*Store, []byte, error) {
 }
 
 //GenereateIdempotentID generate a unique sha256
-func GenereateIdempotentID(code, path, comment, alias, solution string) (string, error) {
-	id := []byte(fmt.Sprintf("%s-%s-%s-%s-%s", code, path, comment, alias, solution))
+func GenereateIdempotentID(code, comment, alias, solution string) (string, error) {
+	id := []byte(fmt.Sprintf("%s-%s-%s-%s", code, comment, alias, solution))
 	hash := sha256.New()
 	if _, err := hash.Write(id); err != nil {
 		return "", err

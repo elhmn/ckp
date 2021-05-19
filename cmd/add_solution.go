@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -40,24 +39,14 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	flags := cmd.Flags()
 	solution := strings.Join(args, " ")
 
-	storeFile, err := config.GetStoreFilePath(conf)
+	storeFile, storeData, storeBytes, err := loadStore(conf)
 	if err != nil {
-		return fmt.Errorf("failed to get the store file path: %s", err)
+		return fmt.Errorf("failed to load the store: %s", err)
 	}
 
-	storeData, storeBytes, err := store.LoadStore(storeFile)
+	tempFile, err := createTempFile(conf, storeBytes)
 	if err != nil {
-		return fmt.Errorf("failed to laod store: %s", err)
-	}
-
-	tempFile, err := config.GetTempStoreFilePath(conf)
-	if err != nil {
-		return fmt.Errorf("failed to get the store temporary file path: %s", err)
-	}
-
-	//Copy the store file to a temporary destination
-	if err := ioutil.WriteFile(tempFile, storeBytes, 0666); err != nil {
-		return fmt.Errorf("failed to write to file %s: %s", tempFile, err)
+		return fmt.Errorf("failed to create tempFile: %s", err)
 	}
 
 	script, err := createNewSolutionScriptEntry(solution, flags)
@@ -72,19 +61,9 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	//Add new script entry in the `Store` struct
 	storeData.Scripts = append(storeData.Scripts, script)
 
-	//Save the new `Store` struct in the store file
-	if err = storeData.SaveStore(storeFile); err != nil {
-		//if we failed to write the store file then we restore the file to its original content
-		if err1 := ioutil.WriteFile(storeFile, storeBytes, 0666); err1 != nil {
-			return fmt.Errorf("failed to write to file %s: %s", storeFile, err)
-		}
-
-		//Delete the temporary file
-		if err := os.RemoveAll(tempFile); err != nil {
-			return fmt.Errorf("failed to delete file %s: %s", tempFile, err)
-		}
-
-		return fmt.Errorf("failed to write to file %s: %s", storeFile, err)
+	//Save storeData in store
+	if err := saveStore(storeData, storeBytes, storeFile, tempFile); err != nil {
+		return fmt.Errorf("failed to save store in %s:  %s", storeFile, err)
 	}
 
 	//Delete the temporary file
@@ -100,18 +79,13 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 func createNewSolutionScriptEntry(solution string, flags *flag.FlagSet) (store.Script, error) {
 	timeNow := time.Now()
 
-	//Get data from flags
-	path, err := flags.GetString("path")
-	if err != nil {
-		return store.Script{}, fmt.Errorf("could not parse `path` flag: %s", err)
-	}
 	comment, err := flags.GetString("comment")
 	if err != nil {
 		return store.Script{}, fmt.Errorf("could not parse `comment` flag: %s", err)
 	}
 
 	//Generate script entry unique id
-	id, err := store.GenereateIdempotentID("", path, comment, "", solution)
+	id, err := store.GenereateIdempotentID("", comment, "", solution)
 	if err != nil {
 		return store.Script{}, fmt.Errorf("failed to generate idem potent id: %s", err)
 	}
