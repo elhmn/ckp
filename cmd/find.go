@@ -33,19 +33,27 @@ func NewFindCommand(conf config.Config) *cobra.Command {
 }
 
 func getTemplates() *promptui.SelectTemplates {
+	funcMap := promptui.FuncMap
+	funcMap["trimText"] = func(s string) string {
+		if len(s) > 77 {
+			return s[:77] + "..."
+		}
+		return s
+	}
 	//if you find a hard time understand it check out golang templating format documentation
 	//here https://golang.org/pkg/text/template
 	return &promptui.SelectTemplates{
 		Label: "{{ if .Code.Content -}} {{`code:` | bold | green}} " +
-			"{{.Code.Content}} {{- else -}} {{ .Solution.Content }} {{ end }}",
-		Active: "* {{ if .Code.Content -}} {{`code:` | bold | green}} {{.Code.Content | bold}} {{ else }} " +
-			"{{`solution:` | bold | yellow }} {{ .Solution.Content | bold }} {{ end }}",
-		Inactive: "{{ if .Code.Content -}} {{`code:` | green}} {{.Code.Content}} " +
-			"{{- else -}} {{`solution:` | yellow}} {{ .Solution.Content }} {{ end }}",
+			"{{ trimText .Code.Content}} {{- else -}} {{ trimText .Solution.Content }} {{ end }}",
+		Active: "* {{ if .Code.Content -}} {{`code:` | bold | green}} {{ trimText .Code.Content | bold}} {{ else }} " +
+			"{{`solution:` | bold | yellow }} {{ trimText .Solution.Content | bold }} {{ end }}",
+		Inactive: "{{ if .Code.Content -}} {{`code:` | green }} {{ trimText .Code.Content }} " +
+			"{{- else -}} {{`solution:` | yellow}} {{ trimText .Solution.Content }} {{ end }}",
 		Selected: " {{ `✓` | green }} {{if .Code.Content -}} {{ .Code.Content | bold }} {{- else -}} {{ .Solution.Content | bold }} {{ end }}",
 		Details: "Type: {{- if .Code.Content }} code {{ else }} solution {{- end }}" +
-			"{{ if .Code.Alias }} | Alias: {{ .Code.Alias }} {{- end }}" +
-			"{{ if .Comment }} | Comment: {{ .Comment }} {{- end }}",
+			"{{ if .Code.Alias }} | Alias: {{ trimText .Code.Alias }} {{- end }}" +
+			"{{ if .Comment }} | Comment: {{ trimText .Comment }} {{- end }}",
+		FuncMap: funcMap,
 	}
 }
 
