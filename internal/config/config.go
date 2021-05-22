@@ -57,3 +57,15 @@ func GetTempStoreFilePath(conf Config) (string, error) {
 	storepath := fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, StoreTempFileName)
 	return storepath, nil
 }
+
+//GetStoreDirPath returns the path of the ckp store git repository
+func GetStoreDirPath(conf Config) (string, error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return "", fmt.Errorf("failed to read home directory: %s", err)
+	}
+
+	//Create ckp folder if it does not exist
+	dir := fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, conf.CKPStorageFolder)
+	return dir, nil
+}
