@@ -76,8 +76,13 @@ func TestGetHistoryRecords(t *testing.T) {
 	})
 
 	//Delete history tmp files
-	deleteFile(history.BashHistoryFile)
-	deleteFile(history.ZshHistoryFile)
+	if err := deleteFile(history.BashHistoryFile); err != nil {
+		t.Error(err)
+	}
+	if err := deleteFile(history.ZshHistoryFile); err != nil {
+		t.Error(err)
+	}
+
 	//Restore history path
 	history.BashHistoryFile = origBashHistoryFile
 	history.ZshHistoryFile = origZshHistoryFile

@@ -10,7 +10,9 @@ import (
 func TestListCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully with limit 12", func(t *testing.T) {
 		conf := createConfig()
-		setupFolder(conf)
+		if err := setupFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -26,6 +28,8 @@ func TestListCommand(t *testing.T) {
 			t.Errorf("Error: failed with %s", err)
 		}
 
-		deleteFolder(conf)
+		if err := deleteFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
 	})
 }

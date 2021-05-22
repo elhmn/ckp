@@ -41,7 +41,10 @@ func NewAddCodeCommand(conf config.Config) *cobra.Command {
 }
 
 func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error {
-	cmd.Flags().Parse(args)
+	if err := cmd.Flags().Parse(args); err != nil {
+		return err
+	}
+
 	flags := cmd.Flags()
 	code := strings.Join(args, " ")
 
