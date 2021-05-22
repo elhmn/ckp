@@ -28,4 +28,25 @@ func TestListCommand(t *testing.T) {
 
 		deleteFolder(conf)
 	})
+
+	t.Run("make sure that is runs successfully with --all flag set", func(t *testing.T) {
+		conf := createConfig()
+		setupFolder(conf)
+		writer := &bytes.Buffer{}
+		conf.OutWriter = writer
+
+		command := cmd.NewListCommand(conf)
+		//Set writer
+		command.SetOutput(conf.OutWriter)
+
+		//Set args
+		command.SetArgs([]string{"--all"})
+
+		err := command.Execute()
+		if err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
+		deleteFolder(conf)
+	})
 }

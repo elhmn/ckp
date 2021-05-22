@@ -18,10 +18,13 @@ func NewListCommand(conf config.Config) *cobra.Command {
 		Long: `list will display the code snippets and solutions you have stored
 
 	example: ckp list
-	Will list both your first 10 code snippets and solutions
+	Will list your first 10 code snippets and solutions
 
 	example: ckp list --limit 20
-	Will list both your first 20 code snippets and solutions
+	Will list your first 20 code snippets and solutions
+
+	example: ckp list --all
+	Will list all your code snippets and solutions
 
 	example: ckp list --code
 	Will list your first 10 code snippets only
@@ -37,9 +40,10 @@ func NewListCommand(conf config.Config) *cobra.Command {
 		},
 	}
 
-	command.PersistentFlags().IntP("limit", "l", 10, `ckp list --limit 20`)
-	command.PersistentFlags().BoolP("code", "c", false, `ckp list --code`)
-	command.PersistentFlags().BoolP("solution", "s", false, `ckp list --solution`)
+	command.PersistentFlags().IntP("limit", "l", 10, `limit the number of element listed`)
+	command.PersistentFlags().BoolP("code", "c", false, `list your code records only`)
+	command.PersistentFlags().BoolP("solution", "s", false, `list your solutions only`)
+	command.PersistentFlags().BoolP("all", "a", false, `list all your code and solutions`)
 
 	return command
 }
@@ -61,6 +65,10 @@ func listCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	if err != nil {
 		return fmt.Errorf("could not parse `solution` flag: %s", err)
 	}
+	all, err := flags.GetBool("all")
+	if err != nil {
+		return fmt.Errorf("could not parse `all` flag: %s", err)
+	}
 
 	//get store data
 	storeFile, err := config.GetStoreFilePath(conf)
@@ -73,7 +81,7 @@ func listCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 		return fmt.Errorf("failed to laod store: %s", err)
 	}
 
-	list := listScripts(storeData.Scripts, code, solution, limit)
+	list := listScripts(storeData.Scripts, code, solution, all, limit)
 
 	fmt.Fprintln(conf.OutWriter, list)
 	return nil
@@ -86,9 +94,14 @@ func getField(field, value string) string {
 	return ""
 }
 
-func listScripts(scripts []store.Script, isCode, isSolution bool, limit int) string {
+func listScripts(scripts []store.Script, isCode, isSolution, shouldListAll bool, limit int) string {
 	list := ""
 	size := len(scripts)
+
+	//if --all was specified set the limit to the size of the list of scripts
+	if shouldListAll {
+		limit = size
+	}
 
 	for i := 0; i < limit && i < size; i++ {
 		s := scripts[i]
