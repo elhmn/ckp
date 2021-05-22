@@ -12,8 +12,9 @@ func TestFindComment(t *testing.T) {
 		conf := createConfig()
 
 		//setup temporary folder
-		setupFolder(conf)
-		defer deleteFolder(conf)
+		if err := setupFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
 
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
@@ -24,6 +25,10 @@ func TestFindComment(t *testing.T) {
 
 		err := command.Execute()
 		if err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
+		if err := deleteFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
 	})

@@ -11,7 +11,11 @@ import (
 func TestAddHistoryCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
 		conf := createConfig()
-		setupFolder(conf)
+
+		if err := setupFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -32,6 +36,8 @@ func TestAddHistoryCommand(t *testing.T) {
 		exp := "Your history was successfully added!\n"
 		assert.Equal(t, exp, got)
 
-		deleteFolder(conf)
+		if err := deleteFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
 	})
 }

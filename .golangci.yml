@@ -3,3 +3,11 @@ linters:
   enable:
     - whitespace
     - govet
+    - errcheck
+    - deadcode
+    - gosimple
+    - unused
+    - structcheck
+    - staticcheck
+    - typecheck
+    - varcheck

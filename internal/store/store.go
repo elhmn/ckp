@@ -23,6 +23,7 @@ type Store struct {
 	Scripts []Script `json:"scripts,omitempty" yaml:"scripts,omitempty"`
 }
 
+//Script defines the structure of an entry in the `Store`
 type Script struct {
 	ID           string    `json:"id,omitempty" yaml:"id,omitempty"`
 	CreationTime time.Time `json:"creationtime,omitempty" yaml:"creationtime,omitempty"`
@@ -45,14 +46,14 @@ func (s Script) String() string {
 		list += getField("ID", s.ID)
 		list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
 		list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
-		list += fmt.Sprintf("  Type: Solution\n")
+		list += "  Type: Solution\n"
 		list += getField("  Comment", s.Comment)
 		list += getField("  Solution", s.Solution.Content)
 	} else {
 		list += getField("ID", s.ID)
 		list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
 		list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
-		list += fmt.Sprintf("  Type: Code\n")
+		list += "  Type: Code\n"
 		list += getField("  Alias", s.Code.Alias)
 		list += getField("  Comment", s.Comment)
 		list += getField("  Code", s.Code.Content)

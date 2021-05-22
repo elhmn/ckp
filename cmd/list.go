@@ -49,7 +49,10 @@ func NewListCommand(conf config.Config) *cobra.Command {
 }
 
 func listCommand(cmd *cobra.Command, args []string, conf config.Config) error {
-	cmd.Flags().Parse(args)
+	if err := cmd.Flags().Parse(args); err != nil {
+		return err
+	}
+
 	flags := cmd.Flags()
 
 	//Get data from flags
@@ -113,7 +116,7 @@ func listScripts(scripts []store.Script, isCode, isSolution, shouldListAll bool,
 			list += getField("ID", s.ID)
 			list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
 			list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
-			list += fmt.Sprintf("  Type: Solution\n")
+			list += "  Type: Solution\n"
 			list += getField("  Comment", s.Comment)
 			list += getField("  Solution", s.Solution.Content)
 		} else {
@@ -123,7 +126,7 @@ func listScripts(scripts []store.Script, isCode, isSolution, shouldListAll bool,
 			list += getField("ID", s.ID)
 			list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
 			list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
-			list += fmt.Sprintf("  Type: Code\n")
+			list += "  Type: Code\n"
 			list += getField("  Alias", s.Code.Alias)
 			list += getField("  Comment", s.Comment)
 			list += getField("  Code", s.Code.Content)
