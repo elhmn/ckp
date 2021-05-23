@@ -8,6 +8,8 @@ import (
 
 	"github.com/elhmn/ckp/cmd"
 	"github.com/elhmn/ckp/internal/config"
+	"github.com/elhmn/ckp/mocks"
+	"github.com/stretchr/testify/mock"
 )
 
 //TestInitCommand test the `ckp init` command
@@ -16,7 +18,13 @@ func TestInitCommand(t *testing.T) {
 
 	t.Run("initialised successfully", func(t *testing.T) {
 		conf := config.NewDefaultConfig()
-		conf.Exec = &cmd.MockedExec{}
+
+		//Mock functions
+		mockedExec := &mocks.IExec{}
+		mockedExec.On("CreateFolderIfDoesNotExist", mock.Anything).Return(nil)
+		mockedExec.On("DoGitClone", mock.Anything, "https://github.com/elhmn/fakefolder", "repo").Return(mock.Anything, nil)
+		conf.Exec = mockedExec
+
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -31,6 +39,7 @@ func TestInitCommand(t *testing.T) {
 		if err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
+		mockedExec.AssertExpectations(t)
 	})
 
 	t.Run("failed to create folder", func(t *testing.T) {
@@ -40,9 +49,9 @@ func TestInitCommand(t *testing.T) {
 		exp := "failed to create folder"
 
 		//Setup for failure
-		conf.Exec = &cmd.MockedExec{
-			CreateFolderIfDoesNotExistErrorOutput: fmt.Errorf(exp),
-		}
+		mockedExec := &mocks.IExec{}
+		mockedExec.On("CreateFolderIfDoesNotExist", mock.Anything).Return(fmt.Errorf(exp))
+		conf.Exec = mockedExec
 
 		command := cmd.NewInitCommand(conf)
 		//Set writer
@@ -60,6 +69,8 @@ func TestInitCommand(t *testing.T) {
 		if !strings.Contains(got, exp) {
 			t.Errorf("expected failure with [%s], got [%s]", exp, got)
 		}
+
+		mockedExec.AssertExpectations(t)
 	})
 
 	t.Run("failed to clone remote repository", func(t *testing.T) {
@@ -69,9 +80,10 @@ func TestInitCommand(t *testing.T) {
 		exp := "failed to clone remote repository"
 
 		//Setup for failure
-		conf.Exec = &cmd.MockedExec{
-			DoGitCloneErrorOutput: fmt.Errorf(exp),
-		}
+		mockedExec := &mocks.IExec{}
+		conf.Exec = mockedExec
+		mockedExec.On("CreateFolderIfDoesNotExist", mock.Anything).Return(nil)
+		mockedExec.On("DoGitClone", mock.Anything, "https://github.com/elhmn/fakefolder", "repo").Return(mock.Anything, fmt.Errorf(exp))
 
 		command := cmd.NewInitCommand(conf)
 		//Set writer
@@ -89,5 +101,7 @@ func TestInitCommand(t *testing.T) {
 		if !strings.Contains(got, exp) {
 			t.Errorf("expected failure with [%s], got [%s]", exp, got)
 		}
+
+		mockedExec.AssertExpectations(t)
 	})
 }
