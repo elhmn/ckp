@@ -8,13 +8,14 @@ import (
 
 	"github.com/elhmn/ckp/cmd"
 	"github.com/elhmn/ckp/internal/config"
+	"github.com/elhmn/ckp/mocks"
 	"github.com/mitchellh/go-homedir"
 	"github.com/stretchr/testify/assert"
 )
 
 func createConfig() config.Config {
 	conf := config.NewDefaultConfig()
-	conf.Exec = &cmd.MockedExec{}
+	conf.Exec = &mocks.IExec{}
 
 	//Think of deleting this file later on
 	conf.CKPDir = ".ckp_test"

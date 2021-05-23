@@ -84,7 +84,6 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 	if err != nil {
 		return fmt.Errorf("failed to pull stash changes: %s: %s", err, out)
 	}
-
 	return nil
 }
 
