@@ -70,9 +70,20 @@ func pushCommand(conf config.Config) error {
 }
 
 func pullRemoteChanges(conf config.Config, dir, file string) error {
-	out, err := conf.Exec.DoGit(dir, "stash")
+	hasLocalChanges := false
+	out, err := conf.Exec.DoGit(dir, "diff")
 	if err != nil {
-		return fmt.Errorf("failed to pull stash changes: %s: %s", err, out)
+		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
+	}
+	if out != "" {
+		hasLocalChanges = true
+	}
+
+	if hasLocalChanges {
+		out, err = conf.Exec.DoGit(dir, "stash")
+		if err != nil {
+			return fmt.Errorf("failed to stash changes: %s: %s", err, out)
+		}
 	}
 
 	out, err = conf.Exec.DoGit(dir, "pull", "--rebase", "origin", "master")
@@ -80,15 +91,26 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 		return fmt.Errorf("failed to pull remote changes: %s: %s", err, out)
 	}
 
-	out, err = conf.Exec.DoGit(dir, "stash", "apply")
-	if err != nil {
-		return fmt.Errorf("failed to pull stash changes: %s: %s", err, out)
+	if hasLocalChanges {
+		out, err = conf.Exec.DoGit(dir, "stash", "apply")
+		if err != nil {
+			return fmt.Errorf("failed to apply stash changes: %s: %s", err, out)
+		}
 	}
 	return nil
 }
 
 func pushLocalChanges(conf config.Config, dir, file string) error {
-	out, err := conf.Exec.DoGit(dir, "add", file)
+	out, err := conf.Exec.DoGit(dir, "diff", file)
+	if err != nil {
+		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
+	}
+	//abort if `file` does not have local changes
+	if out == "" {
+		return nil
+	}
+
+	out, err = conf.Exec.DoGit(dir, "add", file)
 	if err != nil {
 		return fmt.Errorf("failed to add changes: %s: %s", err, out)
 	}

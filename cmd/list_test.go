@@ -9,7 +9,7 @@ import (
 
 func TestListCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully with limit 12", func(t *testing.T) {
-		conf := createConfig()
+		conf, _ := createConfig()
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
@@ -34,7 +34,7 @@ func TestListCommand(t *testing.T) {
 	})
 
 	t.Run("make sure that is runs successfully with --all flag set", func(t *testing.T) {
-		conf := createConfig()
+		conf, _ := createConfig()
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
