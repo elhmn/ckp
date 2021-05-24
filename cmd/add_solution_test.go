@@ -6,11 +6,23 @@ import (
 
 	"github.com/elhmn/ckp/cmd"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAddSolutionCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
-		conf, _ := createConfig()
+		conf, mockedExec := createConfig()
+
+		//Setup function calls mocks
+		mockedExec.On("DoGit", mock.Anything, "diff").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "diff", mock.Anything).Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "stash").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "stash", "apply").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "pull", "--rebase", "origin", "master").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "add", mock.Anything).Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "commit", "-m", mock.Anything).Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGitPush", mock.Anything, "origin", "master").Return(mock.Anything, nil).Once()
+
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
@@ -35,8 +47,9 @@ func TestAddSolutionCommand(t *testing.T) {
 		}
 
 		got := writer.String()
-		exp := "Your solution was successfully added!\n"
+		exp := "\nYour solution was successfully added!\n"
 		assert.Equal(t, exp, got)
+		mockedExec.AssertExpectations(t)
 
 		if err := deleteFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
