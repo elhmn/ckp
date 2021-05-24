@@ -15,6 +15,8 @@ import (
 func TestPushCommand(t *testing.T) {
 	getMockedExec := func() *mocks.IExec {
 		mockedExec := &mocks.IExec{}
+		mockedExec.On("DoGit", mock.Anything, "diff").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "diff", mock.Anything).Return(mock.Anything, nil).Once()
 		mockedExec.On("DoGit", mock.Anything, "stash").Return(mock.Anything, nil).Once()
 		mockedExec.On("DoGit", mock.Anything, "stash", "apply").Return(mock.Anything, nil).Once()
 		mockedExec.On("DoGit", mock.Anything, "pull", "--rebase", "origin", "master").Return(mock.Anything, nil).Once()

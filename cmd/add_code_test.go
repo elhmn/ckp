@@ -11,15 +11,16 @@ import (
 	"github.com/elhmn/ckp/mocks"
 	"github.com/mitchellh/go-homedir"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
-func createConfig() config.Config {
+func createConfig() (config.Config, *mocks.IExec) {
 	conf := config.NewDefaultConfig()
-	conf.Exec = &mocks.IExec{}
-
+	mockedExec := &mocks.IExec{}
+	conf.Exec = mockedExec
 	//Think of deleting this file later on
 	conf.CKPDir = ".ckp_test"
-	return conf
+	return conf, mockedExec
 }
 
 func setupFolder(conf config.Config) error {
@@ -46,7 +47,17 @@ func deleteFolder(conf config.Config) error {
 
 func TestAddCodeCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
-		conf := createConfig()
+		conf, mockedExec := createConfig()
+
+		//Setup function calls mocks
+		mockedExec.On("DoGit", mock.Anything, "diff").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "diff", mock.Anything).Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "stash").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "stash", "apply").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "pull", "--rebase", "origin", "master").Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "add", mock.Anything).Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGit", mock.Anything, "commit", "-m", mock.Anything).Return(mock.Anything, nil).Once()
+		mockedExec.On("DoGitPush", mock.Anything, "origin", "master").Return(mock.Anything, nil).Once()
 
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
@@ -74,8 +85,9 @@ func TestAddCodeCommand(t *testing.T) {
 		}
 
 		got := writer.String()
-		exp := "Your code was successfully added!\n"
+		exp := "\nYour code was successfully added!\n"
 		assert.Equal(t, exp, got)
+		mockedExec.AssertExpectations(t)
 
 		if err := deleteFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)

@@ -10,7 +10,7 @@ import (
 
 func TestAddSolutionCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
-		conf := createConfig()
+		conf, _ := createConfig()
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
