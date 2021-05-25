@@ -51,6 +51,23 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		return fmt.Errorf("failed to get history records: %s", err)
 	}
 
+	addScriptsFromRecords(conf, records, storeData)
+
+	//Save storeData in store
+	if err := saveStore(storeData, storeBytes, storeFile, tempFile); err != nil {
+		return fmt.Errorf("failed to save store in %s:  %s", storeFile, err)
+	}
+
+	//Delete the temporary file
+	if err := os.RemoveAll(tempFile); err != nil {
+		return fmt.Errorf("failed to delete file %s: %s", tempFile, err)
+	}
+
+	fmt.Fprintln(conf.OutWriter, "Your history was successfully added!")
+	return nil
+}
+
+func addScriptsFromRecords(conf config.Config, records []string, storeData *store.Store) *store.Store {
 	size := len(records)
 	for i, record := range records {
 		//Check if the code entry contains sensitive data
@@ -78,18 +95,7 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		storeData.Scripts = append(storeData.Scripts, script)
 	}
 
-	//Save storeData in store
-	if err := saveStore(storeData, storeBytes, storeFile, tempFile); err != nil {
-		return fmt.Errorf("failed to save store in %s:  %s", storeFile, err)
-	}
-
-	//Delete the temporary file
-	if err := os.RemoveAll(tempFile); err != nil {
-		return fmt.Errorf("failed to delete file %s: %s", tempFile, err)
-	}
-
-	fmt.Fprintln(conf.OutWriter, "Your history was successfully added!")
-	return nil
+	return storeData
 }
 
 //createNewHistoryScriptEntry return a new code Script entry
