@@ -7,6 +7,7 @@ import (
 
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/elhmn/ckp/internal/history"
+	"github.com/elhmn/ckp/internal/printers"
 	"github.com/elhmn/ckp/internal/store"
 	"github.com/spf13/cobra"
 )
@@ -50,7 +51,18 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		return fmt.Errorf("failed to get history records: %s", err)
 	}
 
-	for _, record := range records {
+	size := len(records)
+	for i, record := range records {
+		//Check if the code entry contains sensitive data
+		if ret, word := store.HasSensitiveData(record); ret {
+			fmt.Fprintf(conf.OutWriter, "Found the keyword `%s` in %s\n", word, record)
+			fmt.Fprintf(conf.OutWriter, "%d/%d records\n", i, size)
+			if !printers.Confirm("Add anyway ?") {
+				fmt.Fprintf(conf.OutWriter, "Code entry addition was aborted!\n")
+				continue
+			}
+		}
+
 		//Read history file parse its content and store each entry
 		script, err := createNewHistoryScriptEntry(record)
 		if err != nil {
