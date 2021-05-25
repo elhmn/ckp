@@ -51,7 +51,7 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 
 	//Check if the code entry contains sensitive data
 	if ret, word := store.HasSensitiveData(code); ret {
-		fmt.Fprintf(conf.OutWriter, "Contains the keyword `%s` in %s\n", word, code)
+		fmt.Fprintf(conf.OutWriter, "Found the keyword `%s` in %s\n", word, code)
 		if !printers.Confirm("Add anyway ?") {
 			fmt.Fprintf(conf.OutWriter, "Code entry addition was aborted!\n")
 			return nil
