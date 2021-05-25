@@ -30,7 +30,7 @@ var sensitiveWords = []string{"key",
 	"creds",
 	"credential",
 	"token",
-	"barear"}
+	"bearer"}
 
 //Script defines the structure of an entry in the `Store`
 type Script struct {
