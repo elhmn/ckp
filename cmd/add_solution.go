@@ -8,6 +8,7 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/elhmn/ckp/internal/config"
+	"github.com/elhmn/ckp/internal/printers"
 	"github.com/elhmn/ckp/internal/store"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
@@ -36,16 +37,25 @@ func NewAddSolutionCommand(conf config.Config) *cobra.Command {
 }
 
 func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) error {
-	//Setup spinner
-	spin := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
-	spin.Start()
-	defer spin.Stop()
-
 	if err := cmd.Flags().Parse(args); err != nil {
 		return err
 	}
 	flags := cmd.Flags()
 	solution := strings.Join(args, " ")
+
+	//Check if the code entry contains sensitive data
+	if ret, word := store.HasSensitiveData(solution); ret {
+		fmt.Fprintf(conf.OutWriter, "Found the keyword `%s` in %s\n", word, solution)
+		if !printers.Confirm("Add anyway ?") {
+			fmt.Fprintf(conf.OutWriter, "Solution entry addition was aborted!\n")
+			return nil
+		}
+	}
+
+	//Setup spinner
+	spin := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
+	spin.Start()
+	defer spin.Stop()
 
 	dir, err := config.GetStoreDirPath(conf)
 	if err != nil {

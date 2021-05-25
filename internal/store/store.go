@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
 	"gopkg.in/yaml.v2"
@@ -22,6 +23,14 @@ const (
 type Store struct {
 	Scripts []Script `json:"scripts,omitempty" yaml:"scripts,omitempty"`
 }
+
+var sensitiveWords = []string{"key",
+	"secret",
+	"auth",
+	"creds",
+	"credential",
+	"token",
+	"bearer"}
 
 //Script defines the structure of an entry in the `Store`
 type Script struct {
@@ -128,4 +137,22 @@ func GenereateIdempotentID(code, comment, alias, solution string) (string, error
 		return "", err
 	}
 	return hex.EncodeToString(hash.Sum(nil)), nil
+}
+
+//HasSensitiveData checks if the `s` contains sensitive data
+//
+//Returns true and the keyword that was found in the string `s`
+//was found
+//Returns false when no keyword was found
+func HasSensitiveData(s string) (bool, string) {
+	s = strings.ToLower(s)
+
+	for _, w := range sensitiveWords {
+		strings.Contains(s, w)
+		if strings.Contains(s, w) {
+			return true, w
+		}
+	}
+
+	return false, ""
 }
