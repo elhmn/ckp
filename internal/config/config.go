@@ -6,12 +6,15 @@ import (
 	"os"
 
 	"github.com/elhmn/ckp/internal/exec"
+	"github.com/elhmn/ckp/internal/printers"
 	"github.com/mitchellh/go-homedir"
 )
 
 const (
 	StoreFileName     = "repo/store.yaml"
 	StoreTempFileName = "repo/.temp_store.yaml"
+
+	MainBranch = "master"
 )
 
 //Config contains the entire cli dependencies
@@ -19,6 +22,16 @@ type Config struct {
 	Exec             exec.IExec
 	CKPDir           string
 	CKPStorageFolder string
+	Spin             printers.ISpinner
+
+	//MainBranch is a your remote repository main branch
+	MainBranch string
+
+	//WorkingBranch is `ckp` local working branch
+	//instead of using your main branch `ckp` uses a separate
+	//branch locally to facilite diff checks between your local
+	//and remote changes
+	WorkingBranch string
 
 	//io Writers useful for testing
 	OutWriter io.Writer
@@ -29,10 +42,13 @@ type Config struct {
 func NewDefaultConfig() Config {
 	return Config{
 		Exec:             exec.NewExec(),
+		Spin:             printers.NewSpinner(),
 		OutWriter:        os.Stdout,
 		ErrWriter:        os.Stderr,
 		CKPDir:           ".ckp",
 		CKPStorageFolder: "repo",
+		MainBranch:       MainBranch,
+		WorkingBranch:    "working-" + MainBranch,
 	}
 }
 

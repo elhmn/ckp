@@ -71,10 +71,17 @@ func pushCommand(conf config.Config) error {
 
 func pullRemoteChanges(conf config.Config, dir, file string) error {
 	hasLocalChanges := false
-	out, err := conf.Exec.DoGit(dir, "diff")
+
+	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "master")
+	if err != nil {
+		return fmt.Errorf("failed to fetch origin/master: %s: %s", err, out)
+	}
+
+	out, err = conf.Exec.DoGit(dir, "diff", "origin/master", "--", file)
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
+
 	if out != "" {
 		hasLocalChanges = true
 	}
@@ -101,7 +108,12 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 }
 
 func pushLocalChanges(conf config.Config, dir, file string) error {
-	out, err := conf.Exec.DoGit(dir, "diff", file)
+	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "master")
+	if err != nil {
+		return fmt.Errorf("failed to fetch origin/master: %s: %s", err, out)
+	}
+
+	out, err = conf.Exec.DoGit(dir, "diff", "origin/master", "--", file)
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
