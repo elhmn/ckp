@@ -15,15 +15,13 @@ import (
 func TestPushCommand(t *testing.T) {
 	getMockedExec := func() *mocks.IExec {
 		mockedExec := &mocks.IExec{}
-		mockedExec.On("DoGit", mock.Anything, "diff").Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "diff", mock.Anything).Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "stash").Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "stash", "apply").Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "pull", "--rebase", "origin", "master").Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "add", mock.Anything).Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "commit", "-m", mock.Anything).Return(mock.Anything, nil).Once()
+		//Setup function calls mocks
+		mockedExec.On("DoGit", mock.Anything, mock.Anything).Return(mock.Anything, nil)
+		mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
+		mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
+		mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
+		mockedExec.On("DoGitPush", mock.Anything, "origin", mock.Anything).Return(mock.Anything, nil)
 
-		mockedExec.On("DoGitPush", mock.Anything, "origin", "master").Return(mock.Anything, nil).Once()
 		return mockedExec
 	}
 
@@ -49,6 +47,11 @@ func TestPushCommand(t *testing.T) {
 			t.Errorf("expected failure with [%s], got [%s]", exp, got)
 		}
 
-		mockedExec.AssertExpectations(t)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "master")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/master", "--", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "stash", "apply")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "add", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "commit", "-m", "update: update store")
+		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "master")
 	})
 }

@@ -8,11 +8,13 @@ import (
 	"github.com/elhmn/ckp/internal/files"
 	"github.com/elhmn/ckp/internal/history"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestAddHistoryCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
-		conf, _ := createConfig()
+		conf, mockedExec := createConfig()
+
 		//set history files to fixtures
 		origBashHistoryFile := history.BashHistoryFile
 		origZshHistoryFile := history.ZshHistoryFile
@@ -51,7 +53,7 @@ func TestAddHistoryCommand(t *testing.T) {
 		}
 
 		got := writer.String()
-		exp := "Your history was successfully added!\n"
+		exp := "\nYour history was successfully added!\n"
 		assert.Equal(t, exp, got)
 
 		if err := deleteFolder(conf); err != nil {
@@ -65,6 +67,14 @@ func TestAddHistoryCommand(t *testing.T) {
 		if err := files.DeleteFileFromHomeDirectory(history.ZshHistoryFile); err != nil {
 			t.Error(err)
 		}
+
+		//function call assert
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "master")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/master", "--", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "stash", "apply")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "add", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "commit", "-m", "ckp: add entry")
+		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "master")
 
 		//Restore history path
 		history.BashHistoryFile = origBashHistoryFile

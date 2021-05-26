@@ -100,7 +100,7 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 	}
 
 	conf.Spin.Message("pushing local changes...")
-	err = pushLocalChanges(conf, dir, storeFilePath)
+	err = pushLocalChanges(conf, dir, storeFilePath, commitAddAction)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
