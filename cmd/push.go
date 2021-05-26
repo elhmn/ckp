@@ -10,9 +10,10 @@ import (
 )
 
 const (
-	commitAddAction    = "add"
-	commitEditAction   = "edit"
-	commitRemoveAction = "rm"
+	commitAddAction     = "add"
+	commitEditAction    = "edit"
+	commitRemoveAction  = "rm"
+	commitDefaultAction = "push"
 )
 
 //NewPushCommand create new cobra command for the push command
@@ -59,7 +60,7 @@ func pushCommand(conf config.Config) error {
 	spin.Suffix = " remote changes pulled"
 
 	spin.Suffix = " pushing local changes..."
-	err = pushLocalChanges(conf, dir, storeFilePath)
+	err = pushLocalChanges(conf, dir, storeFilePath, commitDefaultAction)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
@@ -71,10 +72,17 @@ func pushCommand(conf config.Config) error {
 
 func pullRemoteChanges(conf config.Config, dir, file string) error {
 	hasLocalChanges := false
-	out, err := conf.Exec.DoGit(dir, "diff")
+
+	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "master")
+	if err != nil {
+		return fmt.Errorf("failed to fetch origin/master: %s: %s", err, out)
+	}
+
+	out, err = conf.Exec.DoGit(dir, "diff", "origin/master", "--", file)
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
+
 	if out != "" {
 		hasLocalChanges = true
 	}
@@ -100,8 +108,13 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 	return nil
 }
 
-func pushLocalChanges(conf config.Config, dir, file string) error {
-	out, err := conf.Exec.DoGit(dir, "diff", file)
+func pushLocalChanges(conf config.Config, dir, file string, action string) error {
+	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "master")
+	if err != nil {
+		return fmt.Errorf("failed to fetch origin/master: %s: %s", err, out)
+	}
+
+	out, err = conf.Exec.DoGit(dir, "diff", "origin/master", "--", file)
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
@@ -115,7 +128,7 @@ func pushLocalChanges(conf config.Config, dir, file string) error {
 		return fmt.Errorf("failed to add changes: %s: %s", err, out)
 	}
 
-	out, err = conf.Exec.DoGit(dir, "commit", "-m", getCommitMessage("push"))
+	out, err = conf.Exec.DoGit(dir, "commit", "-m", getCommitMessage(action))
 	if err != nil {
 		return fmt.Errorf("failed to commit changes: %s: %s", err, out)
 	}

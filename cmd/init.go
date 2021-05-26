@@ -2,9 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"time"
 
-	"github.com/briandowns/spinner"
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -36,9 +34,8 @@ func NewInitCommand(conf config.Config) *cobra.Command {
 
 func initCommand(conf config.Config, remoteStorageFolder string) error {
 	//Setup spinner
-	spin := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
-	spin.Start()
-	defer spin.Stop()
+	conf.Spin.Start()
+	defer conf.Spin.Stop()
 
 	home, err := homedir.Dir()
 	if err != nil {
@@ -55,10 +52,11 @@ func initCommand(conf config.Config, remoteStorageFolder string) error {
 
 	//clone remote storage folder
 	fmt.Fprintf(conf.OutWriter, "Initialising `%s` remote storage folder\n", remoteStorageFolder)
-	output, err := conf.Exec.DoGitClone(dir, remoteStorageFolder, conf.CKPStorageFolder)
+	out, err := conf.Exec.DoGitClone(dir, remoteStorageFolder, conf.CKPStorageFolder)
 	if err != nil {
-		return fmt.Errorf("failed to clone `%s`: %s\n%s", remoteStorageFolder, err, output)
+		return fmt.Errorf("failed to clone `%s`: %s\n%s", remoteStorageFolder, err, out)
 	}
+
 	fmt.Fprintf(conf.OutWriter, "`%s` remote storage folder, Initialised\n", remoteStorageFolder)
 
 	fmt.Fprintf(conf.OutWriter, "ckp successfully initialised\n")

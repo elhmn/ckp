@@ -120,7 +120,7 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 	spin.Suffix = " new entry successfully added"
 
 	spin.Suffix = " pushing local changes..."
-	err = pushLocalChanges(conf, dir, storeFilePath)
+	err = pushLocalChanges(conf, dir, storeFilePath, commitAddAction)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}

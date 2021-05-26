@@ -18,12 +18,24 @@ func createConfig() (config.Config, *mocks.IExec) {
 	conf := config.NewDefaultConfig()
 	mockedExec := &mocks.IExec{}
 	conf.Exec = mockedExec
+
+	//Setup function calls mocks
+	mockedExec.On("DoGit", mock.Anything, mock.Anything).Return(mock.Anything, nil)
+	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
+	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
+	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
+	mockedExec.On("DoGitPush", mock.Anything, "origin", mock.Anything).Return(mock.Anything, nil)
+
 	//Think of deleting this file later on
 	conf.CKPDir = ".ckp_test"
 	return conf, mockedExec
 }
 
 func setupFolder(conf config.Config) error {
+	if err := deleteFolder(conf); err != nil {
+		return fmt.Errorf("Error: failed to delete folder: %s", err)
+	}
+
 	home, err := homedir.Dir()
 	if err != nil {
 		return fmt.Errorf("failed to read home directory: %s", err)
@@ -48,16 +60,6 @@ func deleteFolder(conf config.Config) error {
 func TestAddCodeCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
 		conf, mockedExec := createConfig()
-
-		//Setup function calls mocks
-		mockedExec.On("DoGit", mock.Anything, "diff").Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "diff", mock.Anything).Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "stash").Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "stash", "apply").Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "pull", "--rebase", "origin", "master").Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "add", mock.Anything).Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGit", mock.Anything, "commit", "-m", mock.Anything).Return(mock.Anything, nil).Once()
-		mockedExec.On("DoGitPush", mock.Anything, "origin", "master").Return(mock.Anything, nil).Once()
 
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
@@ -87,7 +89,14 @@ func TestAddCodeCommand(t *testing.T) {
 		got := writer.String()
 		exp := "\nYour code was successfully added!\n"
 		assert.Equal(t, exp, got)
-		mockedExec.AssertExpectations(t)
+
+		//function call assert
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "master")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/master", "--", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "stash", "apply")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "add", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "commit", "-m", "ckp: add entry")
+		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "master")
 
 		if err := deleteFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
