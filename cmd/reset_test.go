@@ -11,7 +11,7 @@ import (
 
 func TestResetCommand(t *testing.T) {
 	t.Run("make sure that it runs successfully", func(t *testing.T) {
-		conf, _ := createConfig()
+		conf, _ := createConfig(t)
 
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)

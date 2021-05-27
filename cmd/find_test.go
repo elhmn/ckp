@@ -9,7 +9,7 @@ import (
 
 func TestFindComment(t *testing.T) {
 	t.Run("make sure that is actually implemented", func(t *testing.T) {
-		conf, _ := createConfig()
+		conf, _ := createConfig(t)
 
 		//setup temporary folder
 		if err := setupFolder(conf); err != nil {

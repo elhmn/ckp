@@ -9,12 +9,13 @@ import (
 
 func TestListCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully with limit 12", func(t *testing.T) {
-		conf, _ := createConfig()
+		conf, _ := createConfig(t)
+		writer := &bytes.Buffer{}
+		conf.OutWriter = writer
+
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
-		writer := &bytes.Buffer{}
-		conf.OutWriter = writer
 
 		command := cmd.NewListCommand(conf)
 		//Set writer
@@ -34,12 +35,13 @@ func TestListCommand(t *testing.T) {
 	})
 
 	t.Run("make sure that is runs successfully with --all flag set", func(t *testing.T) {
-		conf, _ := createConfig()
+		conf, _ := createConfig(t)
+		writer := &bytes.Buffer{}
+		conf.OutWriter = writer
+
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
-		writer := &bytes.Buffer{}
-		conf.OutWriter = writer
 
 		command := cmd.NewListCommand(conf)
 		//Set writer
