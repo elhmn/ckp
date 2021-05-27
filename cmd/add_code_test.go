@@ -9,24 +9,18 @@ import (
 	"github.com/elhmn/ckp/cmd"
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/elhmn/ckp/mocks"
+	"github.com/golang/mock/gomock"
 	"github.com/mitchellh/go-homedir"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
-func createConfig() (config.Config, *mocks.IExec) {
+func createConfig(t *testing.T) (config.Config, *mocks.MockIExec) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
 	conf := config.NewDefaultConfig()
-	mockedExec := &mocks.IExec{}
+	mockedExec := mocks.NewMockIExec(mockCtrl)
 	conf.Exec = mockedExec
-
-	//Setup function calls mocks
-	mockedExec.On("DoGit", mock.Anything, mock.Anything).Return(mock.Anything, nil)
-	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
-	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
-	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
-
-	mockedExec.On("DoGitPush", mock.Anything, "origin", mock.Anything).Return(mock.Anything, nil)
-	mockedExec.On("DoGitPush", mock.Anything, "origin", mock.Anything, mock.Anything).Return(mock.Anything, nil)
 
 	//Think of deleting this file later on
 	conf.CKPDir = ".ckp_test"
@@ -70,14 +64,24 @@ func deleteFolder(conf config.Config) error {
 
 func TestAddCodeCommand(t *testing.T) {
 	t.Run("make sure that it runs successfully", func(t *testing.T) {
-		conf, mockedExec := createConfig()
+		conf, mockedExec := createConfig(t)
+		writer := &bytes.Buffer{}
+		conf.OutWriter = writer
 
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
 
-		writer := &bytes.Buffer{}
-		conf.OutWriter = writer
+		//Specify expectations
+		gomock.InOrder(
+			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "pull", "--rebase", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
+		)
 
 		commandName := "code"
 		command := cmd.NewAddCommand(conf)
@@ -102,13 +106,6 @@ func TestAddCodeCommand(t *testing.T) {
 		assert.Equal(t, exp, got)
 
 		//function call assert
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "main")
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/main", "--", mock.Anything)
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "stash", "apply")
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "add", mock.Anything)
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "commit", "-m", "ckp: add entry")
-		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "main")
-
 		if err := deleteFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}

@@ -5,19 +5,30 @@ import (
 	"testing"
 
 	"github.com/elhmn/ckp/cmd"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
 
 func TestAddSolutionCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
-		conf, mockedExec := createConfig()
+		conf, mockedExec := createConfig(t)
+		writer := &bytes.Buffer{}
+		conf.OutWriter = writer
 
 		if err := setupFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
 		}
-		writer := &bytes.Buffer{}
-		conf.OutWriter = writer
+
+		//Specify expectations
+		gomock.InOrder(
+			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "pull", "--rebase", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
+		)
 
 		commandName := "solution"
 		command := cmd.NewAddCommand(conf)
@@ -39,14 +50,6 @@ func TestAddSolutionCommand(t *testing.T) {
 		got := writer.String()
 		exp := "\nYour solution was successfully added!\n"
 		assert.Equal(t, exp, got)
-
-		//function call assert
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "main")
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/main", "--", mock.Anything)
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "stash", "apply")
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "add", mock.Anything)
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "commit", "-m", "ckp: add entry")
-		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "main")
 
 		if err := deleteFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)
