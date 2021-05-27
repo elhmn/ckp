@@ -14,7 +14,7 @@ const (
 	StoreFileName     = "repo/store.yaml"
 	StoreTempFileName = "repo/.temp_store.yaml"
 
-	MainBranch = "master"
+	MainBranch = "main"
 )
 
 //Config contains the entire cli dependencies

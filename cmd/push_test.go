@@ -47,11 +47,11 @@ func TestPushCommand(t *testing.T) {
 			t.Errorf("expected failure with [%s], got [%s]", exp, got)
 		}
 
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "master")
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/master", "--", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "main")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/main", "--", mock.Anything)
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "stash", "apply")
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "add", mock.Anything)
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "commit", "-m", "update: update store")
-		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "master")
+		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "main")
 	})
 }

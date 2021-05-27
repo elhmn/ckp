@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strings"
 
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/mitchellh/go-homedir"
@@ -55,6 +57,49 @@ func initCommand(conf config.Config, remoteStorageFolder string) error {
 	out, err := conf.Exec.DoGitClone(dir, remoteStorageFolder, conf.CKPStorageFolder)
 	if err != nil {
 		return fmt.Errorf("failed to clone `%s`: %s\n%s", remoteStorageFolder, err, out)
+	}
+
+	//Get local storage folder
+	localStorageFolder := fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, conf.CKPStorageFolder)
+
+	//add an empty commit if the repository has no commits
+	{
+		out, _ := conf.Exec.DoGit(localStorageFolder, "log")
+		if strings.Contains(out, "does not have any commits yet") {
+			storeFilePath, err := config.GetStoreFilePath(conf)
+			if err != nil {
+				return fmt.Errorf("failed get store file path: %s", err)
+			}
+
+			//Create the storage file
+			if err = ioutil.WriteFile(storeFilePath, []byte{}, 0666); err != nil {
+				return fmt.Errorf("failed to write to file %s: %s", storeFilePath, err)
+			}
+
+			//Add storage file
+			out, err = conf.Exec.DoGit(localStorageFolder, "add", storeFilePath)
+			if err != nil {
+				return fmt.Errorf("failed to add changes: %s: %s", err, out)
+			}
+
+			//Create first commit
+			out, err := conf.Exec.DoGit(localStorageFolder, "commit", "-m", "first commit")
+			if err != nil {
+				return fmt.Errorf("failed to rename branch to `%s`: %s:%s", conf.MainBranch, err, out)
+			}
+		}
+	}
+
+	//checkout rename branch
+	out, err = conf.Exec.DoGit(localStorageFolder, "branch", "-M", conf.MainBranch)
+	if err != nil {
+		return fmt.Errorf("failed to rename branch to `%s`: %s:%s", conf.MainBranch, err, out)
+	}
+
+	//push renamed branch to remote
+	out, err = conf.Exec.DoGitPush(localStorageFolder, "origin", conf.MainBranch, "-f")
+	if err != nil {
+		return fmt.Errorf("failed to push `%s` branch: %s:%s", conf.MainBranch, err, out)
 	}
 
 	fmt.Fprintf(conf.OutWriter, "`%s` remote storage folder, Initialised\n", remoteStorageFolder)

@@ -73,12 +73,12 @@ func pushCommand(conf config.Config) error {
 func pullRemoteChanges(conf config.Config, dir, file string) error {
 	hasLocalChanges := false
 
-	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "master")
+	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "main")
 	if err != nil {
-		return fmt.Errorf("failed to fetch origin/master: %s: %s", err, out)
+		return fmt.Errorf("failed to fetch origin/main: %s: %s", err, out)
 	}
 
-	out, err = conf.Exec.DoGit(dir, "diff", "origin/master", "--", file)
+	out, err = conf.Exec.DoGit(dir, "diff", "origin/main", "--", file)
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
@@ -94,7 +94,7 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 		}
 	}
 
-	out, err = conf.Exec.DoGit(dir, "pull", "--rebase", "origin", "master")
+	out, err = conf.Exec.DoGit(dir, "pull", "--rebase", "origin", "main")
 	if err != nil {
 		return fmt.Errorf("failed to pull remote changes: %s: %s", err, out)
 	}
@@ -109,12 +109,12 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 }
 
 func pushLocalChanges(conf config.Config, dir, file string, action string) error {
-	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "master")
+	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "main")
 	if err != nil {
-		return fmt.Errorf("failed to fetch origin/master: %s: %s", err, out)
+		return fmt.Errorf("failed to fetch origin/main: %s: %s", err, out)
 	}
 
-	out, err = conf.Exec.DoGit(dir, "diff", "origin/master", "--", file)
+	out, err = conf.Exec.DoGit(dir, "diff", "origin/main", "--", file)
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
@@ -133,7 +133,7 @@ func pushLocalChanges(conf config.Config, dir, file string, action string) error
 		return fmt.Errorf("failed to commit changes: %s: %s", err, out)
 	}
 
-	out, err = conf.Exec.DoGitPush(dir, "origin", "master")
+	out, err = conf.Exec.DoGitPush(dir, "origin", "main")
 	if err != nil {
 		return fmt.Errorf("failed to push store: %s: %s", err, out)
 	}
