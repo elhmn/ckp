@@ -31,17 +31,26 @@ func createConfig() (config.Config, *mocks.IExec) {
 	return conf, mockedExec
 }
 
+func getTempStorageFolder(conf config.Config) (string, error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return "", fmt.Errorf("failed to read home directory: %s", err)
+	}
+
+	return fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, conf.CKPStorageFolder), nil
+}
+
 func setupFolder(conf config.Config) error {
 	if err := deleteFolder(conf); err != nil {
 		return fmt.Errorf("Error: failed to delete folder: %s", err)
 	}
 
-	home, err := homedir.Dir()
+	folder, err := getTempStorageFolder(conf)
 	if err != nil {
-		return fmt.Errorf("failed to read home directory: %s", err)
+		return fmt.Errorf("failed to get temporary storage folder: %s", err)
 	}
 
-	if err = os.MkdirAll(fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, conf.CKPStorageFolder), 0777); err != nil {
+	if err = os.MkdirAll(folder, 0777); err != nil {
 		return err
 	}
 
@@ -58,7 +67,7 @@ func deleteFolder(conf config.Config) error {
 }
 
 func TestAddCodeCommand(t *testing.T) {
-	t.Run("make sure that is runs successfully", func(t *testing.T) {
+	t.Run("make sure that it runs successfully", func(t *testing.T) {
 		conf, mockedExec := createConfig()
 
 		if err := setupFolder(conf); err != nil {
