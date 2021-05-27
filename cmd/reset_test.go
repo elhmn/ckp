@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestResetommand(t *testing.T) {
+func TestResetCommand(t *testing.T) {
 	t.Run("make sure that it runs successfully", func(t *testing.T) {
 		conf, _ := createConfig()
 

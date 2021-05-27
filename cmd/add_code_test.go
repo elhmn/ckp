@@ -24,7 +24,9 @@ func createConfig() (config.Config, *mocks.IExec) {
 	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
 	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
 	mockedExec.On("DoGit", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(mock.Anything, nil)
+
 	mockedExec.On("DoGitPush", mock.Anything, "origin", mock.Anything).Return(mock.Anything, nil)
+	mockedExec.On("DoGitPush", mock.Anything, "origin", mock.Anything, mock.Anything).Return(mock.Anything, nil)
 
 	//Think of deleting this file later on
 	conf.CKPDir = ".ckp_test"
@@ -100,12 +102,12 @@ func TestAddCodeCommand(t *testing.T) {
 		assert.Equal(t, exp, got)
 
 		//function call assert
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "master")
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/master", "--", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "main")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/main", "--", mock.Anything)
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "stash", "apply")
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "add", mock.Anything)
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "commit", "-m", "ckp: add entry")
-		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "master")
+		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "main")
 
 		if err := deleteFolder(conf); err != nil {
 			t.Errorf("Error: failed with %s", err)

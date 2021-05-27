@@ -69,12 +69,12 @@ func TestAddHistoryCommand(t *testing.T) {
 		}
 
 		//function call assert
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "master")
-		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/master", "--", mock.Anything)
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "fetch", "origin", "main")
+		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "diff", "origin/main", "--", mock.Anything)
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "stash", "apply")
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "add", mock.Anything)
 		mockedExec.AssertCalled(t, "DoGit", mock.Anything, "commit", "-m", "ckp: add entry")
-		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "master")
+		mockedExec.AssertCalled(t, "DoGitPush", mock.Anything, "origin", "main")
 
 		//Restore history path
 		history.BashHistoryFile = origBashHistoryFile
