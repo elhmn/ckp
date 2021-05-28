@@ -8,6 +8,7 @@ import (
 
 	"github.com/elhmn/ckp/cmd"
 	"github.com/elhmn/ckp/internal/config"
+	"github.com/elhmn/ckp/internal/files"
 	"github.com/elhmn/ckp/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/mitchellh/go-homedir"
@@ -47,6 +48,10 @@ func setupFolder(conf config.Config) error {
 	}
 
 	if err = os.MkdirAll(folder, 0777); err != nil {
+		return err
+	}
+
+	if err = files.CopyFileToHomeDirectory(conf.CKPDir+"/"+config.StoreFileName, "../fixtures/store.yaml"); err != nil {
 		return err
 	}
 
