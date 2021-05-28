@@ -5,22 +5,13 @@ scripts:
     comment: "a basic comment"
     solution:
       content: link to your hashnode or medium article
-      filepath: filepath
     code:
       alias: "an alias"
       content: |
         echo "mon code"
-      filepath: filepath
-#--- second script
   - id: hash-of-file-content-2
     creationtime: 2021-05-08T13:08:34.323371+02:00
     updatetime: 2021-05-08T13:08:34.323371+02:00
-    comment: "a basic comment"
+    comment: "a basic second comment"
     solution:
       content: link to your hashnode or medium article
-      filepath: filepath
-    code:
-      alias: "an alias"
-      content: |
-        echo "mon code"
-      filepath: filepath

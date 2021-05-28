@@ -103,7 +103,7 @@ func rmCommand(conf config.Config, entryID string) error {
 	}
 	conf.Spin.Message(" local changes pushed")
 
-	fmt.Fprintf(conf.OutWriter, "\nckp store was pushed successfully\n")
+	fmt.Fprintf(conf.OutWriter, "\nentry was removed successfully\n")
 	return nil
 }
 
