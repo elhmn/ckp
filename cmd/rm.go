@@ -117,7 +117,7 @@ func selectScriptEntry(scripts []store.Script) (int, error) {
 	prompt := promptui.Select{
 		Label:             "Enter your search text",
 		Items:             scripts,
-		Size:              5,
+		Size:              selectItemsSize,
 		StartInSearchMode: true,
 		Searcher:          searchScript,
 		Templates:         getTemplates(),
