@@ -1,6 +1,6 @@
 module github.com/elhmn/ckp
 
-go 1.15
+go 1.16
 
 require (
 	github.com/briandowns/spinner v1.12.0
