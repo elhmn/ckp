@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/elhmn/ckp/internal/config"
@@ -35,8 +36,8 @@ func NewFindCommand(conf config.Config) *cobra.Command {
 func getTemplates() *promptui.SelectTemplates {
 	funcMap := promptui.FuncMap
 	funcMap["trimText"] = func(s string) string {
-		if len(s) > 77 {
-			return s[:77] + "..."
+		if len(s) > 50 {
+			return s[:50] + "..."
 		}
 		return s
 	}
@@ -57,14 +58,27 @@ func getTemplates() *promptui.SelectTemplates {
 	}
 }
 
-func doesScriptContain(script store.Script, input string) bool {
+func extractScriptStringContent(script store.Script) string {
 	code := strings.Replace(strings.ToLower(script.Code.Content), " ", "", -1)
 	solution := strings.Replace(strings.ToLower(script.Solution.Content), " ", "", -1)
 	comment := strings.Replace(strings.ToLower(script.Comment), " ", "", -1)
 	alias := strings.Replace(strings.ToLower(script.Code.Alias), " ", "", -1)
 	content := fmt.Sprintf("%s %s %s %s", code, solution, comment, alias)
-	input = strings.Replace(strings.ToLower(input), " ", "", -1)
-	return strings.Contains(content, input)
+	return content
+}
+
+func doesScriptContain(script store.Script, input string) bool {
+	input = strings.TrimSpace(strings.ToLower(input))
+
+	//Build pattern
+	pattern := ".*" + strings.Join(strings.Split(input, " "), ".*")
+
+	matched, err := regexp.Match(pattern, []byte(extractScriptStringContent(script)))
+	if err != nil {
+		return false
+	}
+
+	return matched
 }
 
 func findCommand(cmd *cobra.Command, args []string, conf config.Config) error {
@@ -88,7 +102,7 @@ func findCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	prompt := promptui.Select{
 		Label:             "Enter your search text",
 		Items:             scripts,
-		Size:              5,
+		Size:              10,
 		StartInSearchMode: true,
 		Searcher:          searchScript,
 		Templates:         getTemplates(),

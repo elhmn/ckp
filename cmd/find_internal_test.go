@@ -38,7 +38,7 @@ func TestDoesScriptContain(t *testing.T) {
 			Solution: store.Solution{Content: "ma solution"},
 		},
 		},
-		{Input: "comment alias", Exp: false, S: store.Script{
+		{Input: "comment alias", Exp: true, S: store.Script{
 			Comment:  "my comment",
 			Code:     store.Code{Content: "je suis con", Alias: "mon alias"},
 			Solution: store.Solution{Content: "ma solution"},
@@ -48,7 +48,7 @@ func TestDoesScriptContain(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("%d - test for \"%s\" equal %v", i, test.Input, test.Exp), func(t *testing.T) {
-			assert.Equal(t, doesScriptContain(test.S, test.Input), test.Exp)
+			assert.Equal(t, test.Exp, doesScriptContain(test.S, test.Input))
 		})
 	}
 }
