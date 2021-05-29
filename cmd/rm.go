@@ -68,18 +68,13 @@ func rmCommand(conf config.Config, entryID string) error {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
 
-	if entryID == "" {
-		conf.Spin.Stop()
-		if entryID, err = selectScriptEntry(storeData.Scripts); err != nil {
-			return fmt.Errorf("failed to select entry: %s", err)
-		}
+	index, err := getScriptEntryIndex(conf, storeData.Scripts, entryID)
+	if err != nil {
+		return fmt.Errorf("failed to get script `%s` entry index: %s", entryID, err)
 	}
 
 	//Remove script entry
-	storeData.Scripts, err = removeScriptEntry(storeData.Scripts, entryID)
-	if err != nil {
-		return fmt.Errorf("failed to remove script entry: %s", err)
-	}
+	storeData.Scripts = removeScriptEntry(storeData.Scripts, index)
 
 	tempFile, err := createTempFile(conf, storeBytes)
 	if err != nil {
@@ -107,17 +102,13 @@ func rmCommand(conf config.Config, entryID string) error {
 	return nil
 }
 
-func removeScriptEntry(scripts []store.Script, entryID string) ([]store.Script, error) {
-	for index, s := range scripts {
-		if entryID == s.ID {
-			return append(scripts[:index], scripts[index+1:]...), nil
-		}
-	}
-
-	return scripts, fmt.Errorf("`%s` entry not found", entryID)
+func removeScriptEntry(scripts []store.Script, index int) []store.Script {
+	return append(scripts[:index], scripts[index+1:]...)
 }
 
-func selectScriptEntry(scripts []store.Script) (string, error) {
+//selectScriptEntry prompt a search
+//returns the selected entry index
+func selectScriptEntry(scripts []store.Script) (int, error) {
 	searchScript := func(input string, index int) bool {
 		s := scripts[index]
 		return doesScriptContain(s, input)
@@ -134,8 +125,27 @@ func selectScriptEntry(scripts []store.Script) (string, error) {
 
 	i, _, err := prompt.Run()
 	if err != nil {
-		return "", fmt.Errorf("prompt failed %v", err)
+		return i, fmt.Errorf("prompt failed %v", err)
 	}
 
-	return scripts[i].ID, nil
+	return i, nil
+}
+
+func getScriptEntryIndex(conf config.Config, scripts []store.Script, entryID string) (int, error) {
+	if entryID == "" {
+		conf.Spin.Stop()
+		index, err := selectScriptEntry(scripts)
+		if err != nil {
+			return index, fmt.Errorf("failed to select entry: %s", err)
+		}
+		return index, nil
+	}
+
+	for index, s := range scripts {
+		if entryID == s.ID {
+			return index, nil
+		}
+	}
+
+	return -1, fmt.Errorf("entry not found")
 }
