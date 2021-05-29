@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const selectItemsSize = 10
+
 //NewFindCommand display a prompt for you to enter the code or solution you are looking for
 func NewFindCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
@@ -102,7 +104,7 @@ func findCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	prompt := promptui.Select{
 		Label:             "Enter your search text",
 		Items:             scripts,
-		Size:              10,
+		Size:              selectItemsSize,
 		StartInSearchMode: true,
 		Searcher:          searchScript,
 		Templates:         getTemplates(),

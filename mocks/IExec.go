@@ -126,3 +126,22 @@ func (mr *MockIExecMockRecorder) Run(dir, command interface{}, args ...interface
 	varargs := append([]interface{}{dir, command}, args...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Run", reflect.TypeOf((*MockIExec)(nil).Run), varargs...)
 }
+
+// RunInteractive mocks base method.
+func (m *MockIExec) RunInteractive(command string, args ...string) error {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{command}
+	for _, a := range args {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "RunInteractive", varargs...)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RunInteractive indicates an expected call of RunInteractive.
+func (mr *MockIExecMockRecorder) RunInteractive(command interface{}, args ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{command}, args...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RunInteractive", reflect.TypeOf((*MockIExec)(nil).RunInteractive), varargs...)
+}
