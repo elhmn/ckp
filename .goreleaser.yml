@@ -1,6 +1,6 @@
 brews:
   - github:
       owner: elhmn
-      name: homebrew-ckp
+      name: ckp
     folder: Formula
     homepage: https://github.com/elhmn/ckp
