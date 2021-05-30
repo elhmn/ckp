@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -71,7 +72,7 @@ func pushCommand(conf config.Config) error {
 }
 
 func pullRemoteChanges(conf config.Config, dir, file string) error {
-	hasLocalChanges := false
+	hasChanges := false
 
 	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "main")
 	if err != nil {
@@ -84,10 +85,10 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 	}
 
 	if out != "" {
-		hasLocalChanges = true
+		hasChanges = true
 	}
 
-	if hasLocalChanges {
+	if hasChanges {
 		out, err = conf.Exec.DoGit(dir, "stash")
 		if err != nil {
 			return fmt.Errorf("failed to stash changes: %s: %s", err, out)
@@ -99,9 +100,10 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 		return fmt.Errorf("failed to pull remote changes: %s: %s", err, out)
 	}
 
-	if hasLocalChanges {
+	if hasChanges {
 		out, err = conf.Exec.DoGit(dir, "stash", "apply")
-		if err != nil {
+		//if there is an error and that the error is not related
+		if err != nil && !strings.Contains(out, "No stash entries found") {
 			return fmt.Errorf("failed to apply stash changes: %s: %s", err, out)
 		}
 	}
@@ -118,7 +120,7 @@ func pushLocalChanges(conf config.Config, dir, file string, action string) error
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
-	//abort if `file` does not have local changes
+	//abort if `file` does not have changes
 	if out == "" {
 		return nil
 	}
