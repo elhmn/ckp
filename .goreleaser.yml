@@ -1,6 +1,7 @@
 brews:
-  - github:
+  - tap:
       owner: elhmn
       name: ckp
     folder: Formula
     homepage: https://github.com/elhmn/ckp
+#     token: "{{ .Env.GITHUB_TOKEN }}"
