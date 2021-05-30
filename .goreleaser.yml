@@ -4,4 +4,3 @@ brews:
       name: ckp
     folder: Formula
     homepage: https://github.com/elhmn/ckp
-    token: "{{ .Env.HOMEBREW_GITHUB_TOKEN }}"
