@@ -2,9 +2,8 @@ name: goreleaser
 
 on:
   push:
-    branches:
-      - master
-  pull_request: #for testing remove later
+    tags:
+      - '*'
 
 permissions:
   contents: write
