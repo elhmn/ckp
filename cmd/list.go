@@ -23,6 +23,9 @@ func NewListCommand(conf config.Config) *cobra.Command {
 	example: ckp list --limit 20
 	Will list your first 20 code snippets and solutions
 
+	example: ckp list --from-history
+	Will list your first 20 code snippets and solutions
+
 	example: ckp list --all
 	Will list all your code snippets and solutions
 
@@ -44,6 +47,7 @@ func NewListCommand(conf config.Config) *cobra.Command {
 	command.PersistentFlags().BoolP("code", "c", false, `list your code records only`)
 	command.PersistentFlags().BoolP("solution", "s", false, `list your solutions only`)
 	command.PersistentFlags().BoolP("all", "a", false, `list all your code and solutions`)
+	command.PersistentFlags().Bool("from-history", false, `list code and solution records from history`)
 
 	return command
 }
@@ -72,11 +76,23 @@ func listCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	if err != nil {
 		return fmt.Errorf("could not parse `all` flag: %s", err)
 	}
+	fromHistory, err := flags.GetBool("from-history")
+	if err != nil {
+		return fmt.Errorf("could not parse `fromHistory` flag: %s", err)
+	}
 
 	//get store data
-	storeFile, err := config.GetStoreFilePath(conf)
-	if err != nil {
-		return fmt.Errorf("failed to get the store file path: %s", err)
+	var storeFile string
+	if !fromHistory {
+		storeFile, err = config.GetStoreFilePath(conf)
+		if err != nil {
+			return fmt.Errorf("failed to get the store file path: %s", err)
+		}
+	} else {
+		storeFile, err = config.GetHistoryFilePath(conf)
+		if err != nil {
+			return fmt.Errorf("failed to get the history store file path: %s", err)
+		}
 	}
 
 	storeData, _, err := store.LoadStore(storeFile)
