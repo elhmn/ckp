@@ -1,5 +1,5 @@
 # codekeeper : (ckp)
-Simple CLI that helps you store and reuse your common scripts and solutions from anywhere
+CLI that helps you store and reuse your common scripts and solutions from anywhere
 
 ## Overview
 
