@@ -78,6 +78,7 @@ func pushCommand(conf config.Config) error {
 
 func pullRemoteChanges(conf config.Config, dir string, files ...string) error {
 	hasChanges := false
+	hasStashed := false
 
 	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "main")
 	if err != nil {
@@ -99,6 +100,10 @@ func pullRemoteChanges(conf config.Config, dir string, files ...string) error {
 		if err != nil {
 			return fmt.Errorf("failed to stash changes: %s: %s", err, out)
 		}
+
+		if !strings.Contains(out, "No local changes to save") {
+			hasStashed = true
+		}
 	}
 
 	out, err = conf.Exec.DoGit(dir, "pull", "--rebase", "origin", "main")
@@ -106,7 +111,7 @@ func pullRemoteChanges(conf config.Config, dir string, files ...string) error {
 		return fmt.Errorf("failed to pull remote changes: %s: %s", err, out)
 	}
 
-	if hasChanges {
+	if hasStashed {
 		out, err = conf.Exec.DoGit(dir, "stash", "apply")
 		//if there is an error and that the error is not related
 		if err != nil && !strings.Contains(out, "No stash entries found") {
