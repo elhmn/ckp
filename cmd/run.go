@@ -12,8 +12,8 @@ import (
 func NewRunCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "run [code_id]",
-		Short: "run run your code entries from the store",
-		Long: `run run your code entries from the store
+		Short: "runs your code entries from the store",
+		Long: `runs your code entries from the store
 
 		example: ckp run
 		Will prompt an interactive UI that will allow you to search and run
@@ -23,23 +23,48 @@ func NewRunCommand(conf config.Config) *cobra.Command {
 		Will run the entry corresponding the entry_id
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			var entryID string
-			if len(args) >= 1 {
-				entryID = args[0]
-			}
-
-			if err := runCommand(conf, entryID); err != nil {
+			if err := runCommand(cmd, args, conf); err != nil {
 				fmt.Fprintf(conf.OutWriter, "Error: %s\n", err)
 				return
 			}
 		},
 	}
 
+	command.PersistentFlags().Bool("from-history", false, `list code and solution records from history`)
+
 	return command
 }
 
-func runCommand(conf config.Config, entryID string) error {
-	_, storeData, _, err := loadStore(conf)
+func runCommand(cmd *cobra.Command, args []string, conf config.Config) error {
+	var entryID string
+	if len(args) >= 1 {
+		entryID = args[0]
+	}
+
+	if err := cmd.Flags().Parse(args); err != nil {
+		return err
+	}
+	flags := cmd.Flags()
+	fromHistory, err := flags.GetBool("from-history")
+	if err != nil {
+		return fmt.Errorf("could not parse `fromHistory` flag: %s", err)
+	}
+
+	//Get the store file path
+	var storeFilePath string
+	if !fromHistory {
+		storeFilePath, err = config.GetStoreFilePath(conf)
+		if err != nil {
+			return fmt.Errorf("failed to get the store file path: %s", err)
+		}
+	} else {
+		storeFilePath, err = config.GetHistoryFilePath(conf)
+		if err != nil {
+			return fmt.Errorf("failed to get the history store file path: %s", err)
+		}
+	}
+
+	_, storeData, _, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}

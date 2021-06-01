@@ -19,7 +19,7 @@ func TestPullCommand(t *testing.T) {
 		//Specify expectations
 		gomock.InOrder(
 			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
-			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any(), gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "pull", "--rebase", "origin", "main"),
 		)
 

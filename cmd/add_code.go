@@ -20,8 +20,8 @@ func NewAddCodeCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:     "code <your_code>",
 		Aliases: []string{"c"},
-		Short:   "add code will store your code",
-		Long: `add code will store your code in your solution repository
+		Short:   "will store your code",
+		Long: `will store your code in your solution repository
 
 	example: ckp add code 'echo this is my command'
 	Will store 'echo this is my command' as a code asset in your solution repository
@@ -81,7 +81,7 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 	spin.Suffix = " remote changes pulled"
 
 	spin.Suffix = " adding new code entry..."
-	storeFile, storeData, storeBytes, err := loadStore(conf)
+	storeFile, storeData, storeBytes, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
@@ -120,7 +120,7 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 	spin.Suffix = " new entry successfully added"
 
 	spin.Suffix = " pushing local changes..."
-	err = pushLocalChanges(conf, dir, storeFilePath, commitAddAction)
+	err = pushLocalChanges(conf, dir, commitAddAction, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
@@ -144,12 +144,21 @@ func createTempFile(conf config.Config, storeBytes []byte) (string, error) {
 	return tempFile, nil
 }
 
-func loadStore(conf config.Config) (string, *store.Store, []byte, error) {
-	storeFile, err := config.GetStoreFilePath(conf)
+func createHistoryTempFile(conf config.Config, storeBytes []byte) (string, error) {
+	tempFile, err := config.GetTempHistoryStoreFilePath(conf)
 	if err != nil {
-		return storeFile, nil, nil, fmt.Errorf("failed to get the store file path: %s", err)
+		return tempFile, fmt.Errorf("failed to get the history store temporary file path: %s", err)
 	}
 
+	//Copy the store file to a temporary destination
+	if err := ioutil.WriteFile(tempFile, storeBytes, 0666); err != nil {
+		return tempFile, fmt.Errorf("failed to write to file %s: %s", tempFile, err)
+	}
+
+	return tempFile, nil
+}
+
+func loadStore(storeFile string) (string, *store.Store, []byte, error) {
 	storeData, storeBytes, err := store.LoadStore(storeFile)
 	if err != nil {
 		return storeFile, storeData, storeBytes, fmt.Errorf("failed to load store: %s", err)

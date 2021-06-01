@@ -11,8 +11,10 @@ import (
 )
 
 const (
-	StoreFileName     = "repo/store.yaml"
-	StoreTempFileName = "repo/.temp_store.yaml"
+	StoreFileName            = "repo/store.yaml"
+	HistoryFileName          = "repo/history_store.yaml"
+	StoreTempFileName        = "repo/.temp_store.yaml"
+	StoreHistoryTempFileName = "repo/.temp_history_store.yaml"
 
 	MainBranch = "main"
 )
@@ -63,6 +65,17 @@ func GetStoreFilePath(conf Config) (string, error) {
 	return storepath, nil
 }
 
+//GetHistoryFilePath get the store file path from config
+func GetHistoryFilePath(conf Config) (string, error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return "", fmt.Errorf("failed to read home directory: %s", err)
+	}
+
+	storepath := fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, HistoryFileName)
+	return storepath, nil
+}
+
 //GetTempStoreFilePath get the temporary store file path from config
 func GetTempStoreFilePath(conf Config) (string, error) {
 	home, err := homedir.Dir()
@@ -71,6 +84,17 @@ func GetTempStoreFilePath(conf Config) (string, error) {
 	}
 
 	storepath := fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, StoreTempFileName)
+	return storepath, nil
+}
+
+//GetTempHistoryStoreFilePath get the temporary store file path from config
+func GetTempHistoryStoreFilePath(conf Config) (string, error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return "", fmt.Errorf("failed to read home directory: %s", err)
+	}
+
+	storepath := fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, StoreHistoryTempFileName)
 	return storepath, nil
 }
 

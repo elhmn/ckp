@@ -17,8 +17,8 @@ func NewAddHistoryCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:     "history",
 		Aliases: []string{"h"},
-		Short:   "add history will store code from your shell history",
-		Long: `add history will store code from your shell history
+		Short:   "will store code from your shell history",
+		Long: `will store code from your shell history
 	it will read your .bash_history and zsh_history files and store
 	every script oneliner as a code entry in your store.yaml file
 
@@ -50,12 +50,17 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		return fmt.Errorf("could not parse `--skip-secrets` flag: %s", err)
 	}
 
-	storeFile, storeData, storeBytes, err := loadStore(conf)
+	historyStoreFilePath, err := config.GetHistoryFilePath(conf)
+	if err != nil {
+		return fmt.Errorf("failed get store file path: %s", err)
+	}
+
+	_, storeData, storeBytes, err := loadStore(historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
 
-	tempFile, err := createTempFile(conf, storeBytes)
+	tempFile, err := createHistoryTempFile(conf, storeBytes)
 	if err != nil {
 		return fmt.Errorf("failed to create tempFile: %s", err)
 	}
@@ -74,13 +79,8 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		return fmt.Errorf("failed get repository path: %s", err)
 	}
 
-	storeFilePath, err := config.GetStoreFilePath(conf)
-	if err != nil {
-		return fmt.Errorf("failed get store file path: %s", err)
-	}
-
 	conf.Spin.Message("pulling remote changes...")
-	err = pullRemoteChanges(conf, dir, storeFilePath)
+	err = pullRemoteChanges(conf, dir, historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to pull remote changes: %s", err)
 	}
@@ -90,8 +90,8 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 	addScriptsFromRecords(conf, records, storeData, shouldSkipSecrets)
 
 	//Save storeData in store
-	if err := saveStore(storeData, storeBytes, storeFile, tempFile); err != nil {
-		return fmt.Errorf("failed to save store in %s:  %s", storeFile, err)
+	if err := saveStore(storeData, storeBytes, historyStoreFilePath, tempFile); err != nil {
+		return fmt.Errorf("failed to save store in %s:  %s", historyStoreFilePath, err)
 	}
 
 	//Delete the temporary file
@@ -100,7 +100,7 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 	}
 
 	conf.Spin.Message("pushing local changes...")
-	err = pushLocalChanges(conf, dir, storeFilePath, commitAddAction)
+	err = pushLocalChanges(conf, dir, commitAddAction, historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
