@@ -32,7 +32,7 @@ func NewAddHistoryCommand(conf config.Config) *cobra.Command {
 		},
 	}
 
-	command.PersistentFlags().BoolP("--skip-secrets", "s", false, `will skip secrets and sensitive informations`)
+	command.PersistentFlags().BoolP("skip-secrets", "s", false, `will skip secrets and sensitive informations`)
 
 	return command
 }
@@ -45,7 +45,7 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 	flags := cmd.Flags()
 
 	//Get data from flags
-	shouldSkipSecrets, err := flags.GetBool("--skip-secrets")
+	shouldSkipSecrets, err := flags.GetBool("skip-secrets")
 	if err != nil {
 		return fmt.Errorf("could not parse `--skip-secrets` flag: %s", err)
 	}
