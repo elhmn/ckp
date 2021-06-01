@@ -53,15 +53,20 @@ func pushCommand(conf config.Config) error {
 		return fmt.Errorf("failed get store file path: %s", err)
 	}
 
+	historyStoreFilePath, err := config.GetHistoryFilePath(conf)
+	if err != nil {
+		return fmt.Errorf("failed get history store file path: %s", err)
+	}
+
 	spin.Suffix = " pulling remote changes..."
-	err = pullRemoteChanges(conf, dir, storeFilePath)
+	err = pullRemoteChanges(conf, dir, storeFilePath, historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to pull remote changes: %s", err)
 	}
 	spin.Suffix = " remote changes pulled"
 
 	spin.Suffix = " pushing local changes..."
-	err = pushLocalChanges(conf, dir, storeFilePath, commitDefaultAction)
+	err = pushLocalChanges(conf, dir, commitDefaultAction, storeFilePath, historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
@@ -71,7 +76,7 @@ func pushCommand(conf config.Config) error {
 	return nil
 }
 
-func pullRemoteChanges(conf config.Config, dir, file string) error {
+func pullRemoteChanges(conf config.Config, dir string, files ...string) error {
 	hasChanges := false
 
 	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "main")
@@ -79,7 +84,8 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 		return fmt.Errorf("failed to fetch origin/main: %s: %s", err, out)
 	}
 
-	out, err = conf.Exec.DoGit(dir, "diff", "origin/main", "--", file)
+	args := append([]string{"diff", "origin/main", "--"}, files...)
+	out, err = conf.Exec.DoGit(dir, args...)
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
@@ -110,13 +116,14 @@ func pullRemoteChanges(conf config.Config, dir, file string) error {
 	return nil
 }
 
-func pushLocalChanges(conf config.Config, dir, file string, action string) error {
+func pushLocalChanges(conf config.Config, dir, action string, files ...string) error {
 	out, err := conf.Exec.DoGit(dir, "fetch", "origin", "main")
 	if err != nil {
 		return fmt.Errorf("failed to fetch origin/main: %s: %s", err, out)
 	}
 
-	out, err = conf.Exec.DoGit(dir, "diff", "origin/main", "--", file)
+	args := append([]string{"diff", "origin/main", "--"}, files...)
+	out, err = conf.Exec.DoGit(dir, args...)
 	if err != nil {
 		return fmt.Errorf("failed to check for local changes: %s: %s", err, out)
 	}
@@ -125,7 +132,8 @@ func pushLocalChanges(conf config.Config, dir, file string, action string) error
 		return nil
 	}
 
-	out, err = conf.Exec.DoGit(dir, "add", file)
+	args = append([]string{"add"}, files...)
+	out, err = conf.Exec.DoGit(dir, args...)
 	if err != nil {
 		return fmt.Errorf("failed to add changes: %s: %s", err, out)
 	}

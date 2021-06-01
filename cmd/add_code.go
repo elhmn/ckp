@@ -120,7 +120,7 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 	spin.Suffix = " new entry successfully added"
 
 	spin.Suffix = " pushing local changes..."
-	err = pushLocalChanges(conf, dir, storeFilePath, commitAddAction)
+	err = pushLocalChanges(conf, dir, commitAddAction, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
@@ -144,6 +144,20 @@ func createTempFile(conf config.Config, storeBytes []byte) (string, error) {
 	return tempFile, nil
 }
 
+func createHistoryTempFile(conf config.Config, storeBytes []byte) (string, error) {
+	tempFile, err := config.GetTempHistoryStoreFilePath(conf)
+	if err != nil {
+		return tempFile, fmt.Errorf("failed to get the history store temporary file path: %s", err)
+	}
+
+	//Copy the store file to a temporary destination
+	if err := ioutil.WriteFile(tempFile, storeBytes, 0666); err != nil {
+		return tempFile, fmt.Errorf("failed to write to file %s: %s", tempFile, err)
+	}
+
+	return tempFile, nil
+}
+
 func loadStore(conf config.Config) (string, *store.Store, []byte, error) {
 	storeFile, err := config.GetStoreFilePath(conf)
 	if err != nil {
@@ -155,6 +169,19 @@ func loadStore(conf config.Config) (string, *store.Store, []byte, error) {
 		return storeFile, storeData, storeBytes, fmt.Errorf("failed to load store: %s", err)
 	}
 	return storeFile, storeData, storeBytes, nil
+}
+
+func loadHistoryStore(conf config.Config) (string, *store.Store, []byte, error) {
+	historyFile, err := config.GetHistoryFilePath(conf)
+	if err != nil {
+		return historyFile, nil, nil, fmt.Errorf("failed to get the history store file path: %s", err)
+	}
+
+	storeData, storeBytes, err := store.LoadStore(historyFile)
+	if err != nil {
+		return historyFile, storeData, storeBytes, fmt.Errorf("failed to load history store: %s", err)
+	}
+	return historyFile, storeData, storeBytes, nil
 }
 
 func saveStore(storeData *store.Store, storeBytes []byte, storeFile, tempFile string) error {

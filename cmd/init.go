@@ -76,8 +76,18 @@ func initCommand(conf config.Config, remoteStorageFolder string) error {
 				return fmt.Errorf("failed to write to file %s: %s", storeFilePath, err)
 			}
 
+			historyStoreFilePath, err := config.GetHistoryFilePath(conf)
+			if err != nil {
+				return fmt.Errorf("failed get history store file path: %s", err)
+			}
+
+			//Create the history storage file
+			if err = ioutil.WriteFile(historyStoreFilePath, []byte{}, 0666); err != nil {
+				return fmt.Errorf("failed to write to file %s: %s", historyStoreFilePath, err)
+			}
+
 			//Add storage file
-			out, err = conf.Exec.DoGit(localStorageFolder, "add", storeFilePath)
+			out, err = conf.Exec.DoGit(localStorageFolder, "add", storeFilePath, historyStoreFilePath)
 			if err != nil {
 				return fmt.Errorf("failed to add changes: %s: %s", err, out)
 			}

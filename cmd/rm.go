@@ -92,7 +92,7 @@ func rmCommand(conf config.Config, entryID string) error {
 	}
 
 	conf.Spin.Message(" pushing local changes...")
-	err = pushLocalChanges(conf, dir, storeFilePath, commitRemoveAction)
+	err = pushLocalChanges(conf, dir, commitRemoveAction, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}

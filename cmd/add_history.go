@@ -50,12 +50,12 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		return fmt.Errorf("could not parse `--skip-secrets` flag: %s", err)
 	}
 
-	storeFile, storeData, storeBytes, err := loadStore(conf)
+	storeFile, storeData, storeBytes, err := loadHistoryStore(conf)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
 
-	tempFile, err := createTempFile(conf, storeBytes)
+	tempFile, err := createHistoryTempFile(conf, storeBytes)
 	if err != nil {
 		return fmt.Errorf("failed to create tempFile: %s", err)
 	}
@@ -74,13 +74,13 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		return fmt.Errorf("failed get repository path: %s", err)
 	}
 
-	storeFilePath, err := config.GetStoreFilePath(conf)
+	historyStoreFilePath, err := config.GetHistoryFilePath(conf)
 	if err != nil {
 		return fmt.Errorf("failed get store file path: %s", err)
 	}
 
 	conf.Spin.Message("pulling remote changes...")
-	err = pullRemoteChanges(conf, dir, storeFilePath)
+	err = pullRemoteChanges(conf, dir, historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to pull remote changes: %s", err)
 	}
@@ -100,7 +100,7 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 	}
 
 	conf.Spin.Message("pushing local changes...")
-	err = pushLocalChanges(conf, dir, storeFilePath, commitAddAction)
+	err = pushLocalChanges(conf, dir, commitAddAction, historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}

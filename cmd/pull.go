@@ -45,8 +45,13 @@ func pullCommand(conf config.Config) error {
 		return fmt.Errorf("failed get store file path: %s", err)
 	}
 
+	historyStoreFilePath, err := config.GetHistoryFilePath(conf)
+	if err != nil {
+		return fmt.Errorf("failed get history store file path: %s", err)
+	}
+
 	spin.Suffix = " pulling remote changes..."
-	err = pullRemoteChanges(conf, dir, storeFilePath)
+	err = pullRemoteChanges(conf, dir, storeFilePath, historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to pull remote changes: %s", err)
 	}

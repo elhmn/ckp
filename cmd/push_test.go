@@ -19,11 +19,11 @@ func TestPushCommand(t *testing.T) {
 		//Specify expectations
 		gomock.InOrder(
 			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
-			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any(), gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "pull", "--rebase", "origin", "main"),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
-			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
-			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any(), gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any(), gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
 		)
 
