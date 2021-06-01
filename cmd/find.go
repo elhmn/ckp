@@ -32,6 +32,8 @@ func NewFindCommand(conf config.Config) *cobra.Command {
 		},
 	}
 
+	command.PersistentFlags().Bool("from-history", false, `list code and solution records from history`)
+
 	return command
 }
 
@@ -84,13 +86,30 @@ func doesScriptContain(script store.Script, input string) bool {
 }
 
 func findCommand(cmd *cobra.Command, args []string, conf config.Config) error {
-	//get store data
-	storeFile, err := config.GetStoreFilePath(conf)
+	if err := cmd.Flags().Parse(args); err != nil {
+		return err
+	}
+	flags := cmd.Flags()
+	fromHistory, err := flags.GetBool("from-history")
 	if err != nil {
-		return fmt.Errorf("failed to get the store file path: %s", err)
+		return fmt.Errorf("could not parse `fromHistory` flag: %s", err)
 	}
 
-	storeData, _, err := store.LoadStore(storeFile)
+	//Get the store file path
+	var storeFilePath string
+	if !fromHistory {
+		storeFilePath, err = config.GetStoreFilePath(conf)
+		if err != nil {
+			return fmt.Errorf("failed to get the store file path: %s", err)
+		}
+	} else {
+		storeFilePath, err = config.GetHistoryFilePath(conf)
+		if err != nil {
+			return fmt.Errorf("failed to get the history store file path: %s", err)
+		}
+	}
+
+	storeData, _, err := store.LoadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to laod store: %s", err)
 	}
