@@ -39,7 +39,12 @@ func NewRunCommand(conf config.Config) *cobra.Command {
 }
 
 func runCommand(conf config.Config, entryID string) error {
-	_, storeData, _, err := loadStore(conf)
+	storeFilePath, err := config.GetStoreFilePath(conf)
+	if err != nil {
+		return fmt.Errorf("failed to get the store file path: %s", err)
+	}
+
+	_, storeData, _, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}

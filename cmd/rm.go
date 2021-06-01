@@ -25,22 +25,33 @@ func NewRmCommand(conf config.Config) *cobra.Command {
 		Will remove the entry corresponding the entry_id
 `,
 		Run: func(cmd *cobra.Command, args []string) {
-			var entryID string
-			if len(args) >= 1 {
-				entryID = args[0]
-			}
-
-			if err := rmCommand(conf, entryID); err != nil {
+			if err := rmCommand(cmd, args, conf); err != nil {
 				fmt.Fprintf(conf.OutWriter, "Error: %s\n", err)
 				return
 			}
 		},
 	}
 
+	command.PersistentFlags().Bool("from-history", false, `list code and solution records from history`)
+
 	return command
 }
 
-func rmCommand(conf config.Config, entryID string) error {
+func rmCommand(cmd *cobra.Command, args []string, conf config.Config) error {
+	var entryID string
+	if len(args) >= 1 {
+		entryID = args[0]
+	}
+
+	if err := cmd.Flags().Parse(args); err != nil {
+		return err
+	}
+	flags := cmd.Flags()
+	fromHistory, err := flags.GetBool("from-history")
+	if err != nil {
+		return fmt.Errorf("could not parse `fromHistory` flag: %s", err)
+	}
+
 	//Setup spinner
 	conf.Spin.Start()
 	defer conf.Spin.Stop()
@@ -50,9 +61,18 @@ func rmCommand(conf config.Config, entryID string) error {
 		return fmt.Errorf("failed get repository path: %s", err)
 	}
 
-	storeFilePath, err := config.GetStoreFilePath(conf)
-	if err != nil {
-		return fmt.Errorf("failed get store file path: %s", err)
+	//Get the store file path
+	var storeFilePath string
+	if !fromHistory {
+		storeFilePath, err = config.GetStoreFilePath(conf)
+		if err != nil {
+			return fmt.Errorf("failed to get the store file path: %s", err)
+		}
+	} else {
+		storeFilePath, err = config.GetHistoryFilePath(conf)
+		if err != nil {
+			return fmt.Errorf("failed to get the history store file path: %s", err)
+		}
 	}
 
 	conf.Spin.Message(" pulling remote changes...")
@@ -63,7 +83,7 @@ func rmCommand(conf config.Config, entryID string) error {
 	conf.Spin.Message(" remote changes pulled")
 
 	conf.Spin.Message(" removing changes")
-	storeFile, storeData, storeBytes, err := loadStore(conf)
+	storeFile, storeData, storeBytes, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}

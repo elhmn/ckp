@@ -75,7 +75,7 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	spin.Suffix = " remote changes pulled"
 
 	spin.Suffix = " adding new solution entry..."
-	storeFile, storeData, storeBytes, err := loadStore(conf)
+	_, storeData, storeBytes, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
@@ -103,8 +103,8 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	storeData.Scripts = append(storeData.Scripts, script)
 
 	//Save storeData in store
-	if err := saveStore(storeData, storeBytes, storeFile, tempFile); err != nil {
-		return fmt.Errorf("failed to save store in %s:  %s", storeFile, err)
+	if err := saveStore(storeData, storeBytes, storeFilePath, tempFile); err != nil {
+		return fmt.Errorf("failed to save store in %s:  %s", storeFilePath, err)
 	}
 
 	//Delete the temporary file

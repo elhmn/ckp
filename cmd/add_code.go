@@ -81,7 +81,7 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 	spin.Suffix = " remote changes pulled"
 
 	spin.Suffix = " adding new code entry..."
-	storeFile, storeData, storeBytes, err := loadStore(conf)
+	storeFile, storeData, storeBytes, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
@@ -158,30 +158,12 @@ func createHistoryTempFile(conf config.Config, storeBytes []byte) (string, error
 	return tempFile, nil
 }
 
-func loadStore(conf config.Config) (string, *store.Store, []byte, error) {
-	storeFile, err := config.GetStoreFilePath(conf)
-	if err != nil {
-		return storeFile, nil, nil, fmt.Errorf("failed to get the store file path: %s", err)
-	}
-
+func loadStore(storeFile string) (string, *store.Store, []byte, error) {
 	storeData, storeBytes, err := store.LoadStore(storeFile)
 	if err != nil {
 		return storeFile, storeData, storeBytes, fmt.Errorf("failed to load store: %s", err)
 	}
 	return storeFile, storeData, storeBytes, nil
-}
-
-func loadHistoryStore(conf config.Config) (string, *store.Store, []byte, error) {
-	historyFile, err := config.GetHistoryFilePath(conf)
-	if err != nil {
-		return historyFile, nil, nil, fmt.Errorf("failed to get the history store file path: %s", err)
-	}
-
-	storeData, storeBytes, err := store.LoadStore(historyFile)
-	if err != nil {
-		return historyFile, storeData, storeBytes, fmt.Errorf("failed to load history store: %s", err)
-	}
-	return historyFile, storeData, storeBytes, nil
 }
 
 func saveStore(storeData *store.Store, storeBytes []byte, storeFile, tempFile string) error {

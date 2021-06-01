@@ -50,7 +50,12 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		return fmt.Errorf("could not parse `--skip-secrets` flag: %s", err)
 	}
 
-	storeFile, storeData, storeBytes, err := loadHistoryStore(conf)
+	historyStoreFilePath, err := config.GetHistoryFilePath(conf)
+	if err != nil {
+		return fmt.Errorf("failed get store file path: %s", err)
+	}
+
+	_, storeData, storeBytes, err := loadStore(historyStoreFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
@@ -74,11 +79,6 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 		return fmt.Errorf("failed get repository path: %s", err)
 	}
 
-	historyStoreFilePath, err := config.GetHistoryFilePath(conf)
-	if err != nil {
-		return fmt.Errorf("failed get store file path: %s", err)
-	}
-
 	conf.Spin.Message("pulling remote changes...")
 	err = pullRemoteChanges(conf, dir, historyStoreFilePath)
 	if err != nil {
@@ -90,8 +90,8 @@ func addHistoryCommand(cmd *cobra.Command, args []string, conf config.Config) er
 	addScriptsFromRecords(conf, records, storeData, shouldSkipSecrets)
 
 	//Save storeData in store
-	if err := saveStore(storeData, storeBytes, storeFile, tempFile); err != nil {
-		return fmt.Errorf("failed to save store in %s:  %s", storeFile, err)
+	if err := saveStore(storeData, storeBytes, historyStoreFilePath, tempFile); err != nil {
+		return fmt.Errorf("failed to save store in %s:  %s", historyStoreFilePath, err)
 	}
 
 	//Delete the temporary file
