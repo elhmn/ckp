@@ -46,7 +46,7 @@ Then copy the binary to your system binary `/usr/local/bin` folder
 1. You first need to create an empty git repository that `ckp` will use as a storage. we higly recommend to keep this repository private
 
 2. Once the repository is created you can initialise `ckp` using the init command.
-    Copy the **ssh url (Mandatory)** and pass it as an argument to the `ckp init` command
+    Copy the ssh or https url and pass it as an argument to the `ckp init` command
 
 ```sh
 $> ckp init git@github.com:elhmn/store.git
