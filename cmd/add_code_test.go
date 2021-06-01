@@ -96,7 +96,6 @@ func TestAddCodeCommand(t *testing.T) {
 		//Set args
 		command.SetArgs([]string{commandName,
 			"echo \"je suis con\"",
-			"--path", "filepath",
 			"--comment", "a_comment",
 			"--alias", "an_alias",
 		})

@@ -38,7 +38,6 @@ func TestAddSolutionCommand(t *testing.T) {
 		//Set args
 		command.SetArgs([]string{commandName,
 			"our solution",
-			"--path", "filepath",
 			"--comment", "a_comment",
 		})
 

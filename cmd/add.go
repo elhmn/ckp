@@ -9,8 +9,8 @@ import (
 func NewAddCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "add",
-		Short: "add will store your solution or code",
-		Long: `add will store your solution or code in your solution repository
+		Short: "add will store your code snippets or solutions",
+		Long: `add will store your code snippets or solutions
 
 	example: ckp add code 'echo je suis con'
 	Will store 'echo je suis con' as a code asset in your solution repository
@@ -28,7 +28,5 @@ func NewAddCommand(conf config.Config) *cobra.Command {
 
 	//Set flags
 	command.PersistentFlags().StringP("comment", "m", "", `ckp add -m <comment>`)
-	command.PersistentFlags().StringP("path", "p", "", `ckp add -p <path_to_your_code_or_solution>`)
-
 	return command
 }
