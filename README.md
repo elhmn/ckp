@@ -1,10 +1,12 @@
 # codekeeper : (ckp)
 Simple CLI that helps you store and reuse your common scripts and solutions from anywhere
 
-## Overview [![GoDoc](https://godoc.org/github.com/elhmn/codekeeper?status.svg)](https://godoc.org/github.com/elhmn/ckp)
+## Overview
 
 The codekeeper (ckp) CLI is a tool that will help you store and reuse your scripts and solutions from anywhere.
 If you find yourself using a bunch of complex scripts or useful bash oneliner and you find it hard to manually add them to a file, send them to a server and then fetch them to this new machine you have recently acquired or ssh-ed into, this tool is for you.
+
+![ckp_demo](https://user-images.githubusercontent.com/5704817/120272338-39377a80-c2ad-11eb-9058-a16f98745bb1.gif)
 
 ## Prerequisite
 `ckp` uses several dependencies such as:
