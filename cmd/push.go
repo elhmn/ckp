@@ -21,8 +21,8 @@ const (
 func NewPushCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "push",
-		Short: "push your changes to your remote repository",
-		Long: `push your changed to your remote repository
+		Short: "pushes your changes to your remote repository",
+		Long: `pushes your changed to your remote repository
 
 		example: ckp push
 `,

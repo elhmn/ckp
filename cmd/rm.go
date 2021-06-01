@@ -14,8 +14,8 @@ import (
 func NewRmCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "rm [code_id | solution_id]",
-		Short: "rm removes code or solution entries from the store",
-		Long: `rm removes code or solution entries from the store
+		Short: "removes code or solution entries from the store",
+		Long: `removes code or solution entries from the store
 
 		example: ckp rm
 		Will prompt an interactive UI that will allow you to search and delete

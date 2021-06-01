@@ -13,8 +13,8 @@ import (
 func NewPullCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "pull",
-		Short: "pull changes from remote storage repository",
-		Long: `pull changes from remote storage repository
+		Short: "pulls changes from remote storage repository",
+		Long: `pulls changes from remote storage repository
 
 		example: ckp pull
 `,

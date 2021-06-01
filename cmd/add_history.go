@@ -17,8 +17,8 @@ func NewAddHistoryCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:     "history",
 		Aliases: []string{"h"},
-		Short:   "add history will store code from your shell history",
-		Long: `add history will store code from your shell history
+		Short:   "will store code from your shell history",
+		Long: `will store code from your shell history
 	it will read your .bash_history and zsh_history files and store
 	every script oneliner as a code entry in your store.yaml file
 

@@ -20,8 +20,8 @@ func NewAddCodeCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:     "code <your_code>",
 		Aliases: []string{"c"},
-		Short:   "add code will store your code",
-		Long: `add code will store your code in your solution repository
+		Short:   "will store your code",
+		Long: `will store your code in your solution repository
 
 	example: ckp add code 'echo this is my command'
 	Will store 'echo this is my command' as a code asset in your solution repository

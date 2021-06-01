@@ -13,8 +13,8 @@ import (
 func NewResetCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "reset",
-		Short: "reset removes the current remote storage repository",
-		Long: `reset removes the current remote storage repository
+		Short: "removes the current remote storage repository",
+		Long: `removes the current remote storage repository
 
 		example: ckp reset
 `,

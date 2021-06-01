@@ -14,8 +14,8 @@ import (
 func NewInitCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "init <storage_repository>",
-		Short: "init initialise ckp storage repository",
-		Long: `init will initialise a storage repository
+		Short: "initialise ckp storage repository",
+		Long: `will initialise a storage repository
 
 		example: ckp init <https://github.com/elhmn/solutions>
 		This git repository will be used as your storage

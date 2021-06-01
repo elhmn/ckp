@@ -12,8 +12,8 @@ import (
 func NewRunCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "run [code_id]",
-		Short: "run run your code entries from the store",
-		Long: `run run your code entries from the store
+		Short: "runs your code entries from the store",
+		Long: `runs your code entries from the store
 
 		example: ckp run
 		Will prompt an interactive UI that will allow you to search and run

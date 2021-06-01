@@ -14,8 +14,8 @@ func NewListCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"l"},
-		Short:   "list will display your code snippets and solutions",
-		Long: `list will display the code snippets and solutions you have stored
+		Short:   "will display your code snippets and solutions",
+		Long: `will display the code snippets and solutions you have stored
 
 	example: ckp list
 	Will list your first 10 code snippets and solutions
