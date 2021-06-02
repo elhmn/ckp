@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -32,6 +33,8 @@ func NewAddSolutionCommand(conf config.Config) *cobra.Command {
 			}
 		},
 	}
+
+	command.PersistentFlags().StringP("path", "p", "", `add code from path`)
 
 	return command
 }
@@ -131,6 +134,18 @@ func createNewSolutionScriptEntry(solution string, flags *flag.FlagSet) (store.S
 	comment, err := flags.GetString("comment")
 	if err != nil {
 		return store.Script{}, fmt.Errorf("could not parse `comment` flag: %s", err)
+	}
+	path, err := flags.GetString("path")
+	if err != nil {
+		return store.Script{}, fmt.Errorf("could not parse `path` flag: %s", err)
+	}
+
+	if path != "" {
+		bytes, err := ioutil.ReadFile(path)
+		if err != nil {
+			return store.Script{}, fmt.Errorf("failed to read %s: %s", path, err)
+		}
+		solution = string(bytes)
 	}
 
 	//Generate script entry unique id
