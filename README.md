@@ -59,46 +59,83 @@ This will create a `~/.ckp` folder, and clone the storage repository
 
 The `add code` command will store your script as a code entry in ckp
 
-```
-ckp add code 'echo say hi!' --alias="sayHi" --comment="a script that says hi"
+```sh
+$> ckp add code 'echo say hi!' --alias="sayHi" --comment="a script that says hi"
 ```
 
 The `add solution` command will store your script as a solution entry in ckp
 
+```sh
+$> ckp add solution 'https://career-ladders.dev/engineering/' --comment="carreer ladders"
 ```
-ckp add solution 'https://career-ladders.dev/engineering/' --comment="carreer ladders"
+
+#### How to add scripts from my `bash_history` or `zh_history`
+
+The `add history` command will read scripts from your history files and store them in ckp.
+the `--skip-secrets` flag will force ckp to skip scripts that potentially contains secrets.
+
+```sh
+$> ckp add history --skip-secrets
 ```
 
 #### How to `Push` your scripts to your remote storage repository
 
 The `push` command will be commited and pushed to your remote repoitory
 
-```
-ckp push
+```sh
+$> ckp push
 ```
 
 #### How to `Pull` your scripts from your remote storage repository
 
 The `pull` command will pull changes from your remote storage repository
 
-```
-ckp pull
+```sh
+$> ckp pull
 ```
 
 #### How to `Find` a script or solution
 
 The `find` command will prompt a search and selection UI, that can be used to find
 
+```sh
+$> ckp find
 ```
-ckp find
+
+To find a script in your history
+
+```sh
+$> ckp find --from-history
 ```
+
 
 #### How to `Run` a script or solution
 
 The `run` command will prompt a search and selection UI, that can be used to find and run a specific script
 
+```sh
+$> ckp run
 ```
-ckp run
+
+To run a script from your history
+
+```sh
+$> ckp run --from-history
+```
+
+
+#### How to `Remove` a script or solution
+
+The `rm` command will prompt a search and selection UI, that can be used to find and run a specific script
+
+```sh
+$> ckp rm
+```
+
+To remove a script from your history
+
+```sh
+$> ckp rm --from-history
 ```
 
 
