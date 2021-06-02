@@ -38,6 +38,7 @@ func NewAddCodeCommand(conf config.Config) *cobra.Command {
 	}
 
 	command.PersistentFlags().StringP("alias", "a", "", `ckp add -a <alias>`)
+	command.PersistentFlags().StringP("path", "p", "", `ckp add -p <script_path>`)
 
 	return command
 }
@@ -196,6 +197,18 @@ func createNewCodeScriptEntry(code string, flags *flag.FlagSet) (store.Script, e
 	comment, err := flags.GetString("comment")
 	if err != nil {
 		return store.Script{}, fmt.Errorf("could not parse `comment` flag: %s", err)
+	}
+	path, err := flags.GetString("path")
+	if err != nil {
+		return store.Script{}, fmt.Errorf("could not parse `path` flag: %s", err)
+	}
+
+	if path != "" {
+		bytes, err := ioutil.ReadFile(path)
+		if err != nil {
+			return store.Script{}, fmt.Errorf("failed to read %s: %s", path, err)
+		}
+		code = string(bytes)
 	}
 
 	//Generate script entry unique id
