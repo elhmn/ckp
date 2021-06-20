@@ -107,6 +107,25 @@ func (mr *MockIExecMockRecorder) DoGitPush(dir interface{}, args ...interface{})
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DoGitPush", reflect.TypeOf((*MockIExec)(nil).DoGitPush), varargs...)
 }
 
+// OpenEditor mocks base method.
+func (m *MockIExec) OpenEditor(editor string, args ...string) error {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{editor}
+	for _, a := range args {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "OpenEditor", varargs...)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// OpenEditor indicates an expected call of OpenEditor.
+func (mr *MockIExecMockRecorder) OpenEditor(editor interface{}, args ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{editor}, args...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OpenEditor", reflect.TypeOf((*MockIExec)(nil).OpenEditor), varargs...)
+}
+
 // Run mocks base method.
 func (m *MockIExec) Run(dir, command string, args ...string) ([]byte, error) {
 	m.ctrl.T.Helper()

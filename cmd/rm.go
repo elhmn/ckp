@@ -6,7 +6,6 @@ import (
 
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/elhmn/ckp/internal/store"
-	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
 
@@ -126,35 +125,10 @@ func removeScriptEntry(scripts []store.Script, index int) []store.Script {
 	return append(scripts[:index], scripts[index+1:]...)
 }
 
-//selectScriptEntry prompt a search
-//returns the selected entry index
-func selectScriptEntry(scripts []store.Script) (int, error) {
-	searchScript := func(input string, index int) bool {
-		s := scripts[index]
-		return doesScriptContain(s, input)
-	}
-
-	prompt := promptui.Select{
-		Label:             "Enter your search text",
-		Items:             scripts,
-		Size:              selectItemsSize,
-		StartInSearchMode: true,
-		Searcher:          searchScript,
-		Templates:         getTemplates(),
-	}
-
-	i, _, err := prompt.Run()
-	if err != nil {
-		return i, fmt.Errorf("prompt failed %v", err)
-	}
-
-	return i, nil
-}
-
 func getScriptEntryIndex(conf config.Config, scripts []store.Script, entryID string) (int, error) {
 	if entryID == "" {
 		conf.Spin.Stop()
-		index, err := selectScriptEntry(scripts)
+		index, _, err := conf.Printers.SelectScriptEntry(scripts)
 		if err != nil {
 			return index, fmt.Errorf("failed to select entry: %s", err)
 		}

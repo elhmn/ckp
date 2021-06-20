@@ -15,17 +15,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createConfig(t *testing.T) (config.Config, *mocks.MockIExec) {
+func createConfig(t *testing.T) config.Config {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
 	conf := config.NewDefaultConfig()
-	mockedExec := mocks.NewMockIExec(mockCtrl)
-	conf.Exec = mockedExec
+	conf.Exec = mocks.NewMockIExec(mockCtrl)
+	conf.Printers = mocks.NewMockIPrinters(mockCtrl)
 
 	//Think of deleting this file later on
 	conf.CKPDir = ".ckp_test"
-	return conf, mockedExec
+	return conf
 }
 
 func getTempStorageFolder(conf config.Config) (string, error) {
@@ -69,7 +69,8 @@ func deleteFolder(conf config.Config) error {
 
 func TestAddCodeCommand(t *testing.T) {
 	t.Run("make sure that it runs successfully", func(t *testing.T) {
-		conf, mockedExec := createConfig(t)
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 

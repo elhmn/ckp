@@ -34,6 +34,12 @@ lint: check-lint
 install-hooks:
 	ln -s $(PWD)/githooks/pre-push .git/hooks/pre-push
 
+## mockgen: generate mocks
+mockgen:
+	mockgen -source internal/exec/exec.go -destination mocks/IExec.go -package=mocks
+	mockgen -source internal/printers/printers.go -destination mocks/IPrinters.go -package=mocks
+
+
 ## clean: remove releases
 clean:
 	rm -rf $(APPNAME)

@@ -13,13 +13,15 @@ type IExec interface {
 	DoGitPush(dir string, args ...string) (string, error)
 	DoGit(dir string, args ...string) (string, error)
 	CreateFolderIfDoesNotExist(dir string) error
+	OpenEditor(editor string, args ...string) error
 }
 
+//Exec struct
 type Exec struct{}
 
 //NewExec returns a new Exec
-func NewExec() Exec {
-	return Exec{}
+func NewExec() *Exec {
+	return &Exec{}
 }
 
 //CreateFolderIfDoesNotExist checks, will check that a folder exist and create the folder if it does not exist

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/elhmn/ckp/cmd"
+	"github.com/elhmn/ckp/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -12,7 +13,8 @@ import (
 //TestPullCommand test the `ckp pull` command
 func TestPullCommand(t *testing.T) {
 	t.Run("pull successfully", func(t *testing.T) {
-		conf, mockedExec := createConfig(t)
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
