@@ -7,13 +7,16 @@ import (
 	"github.com/elhmn/ckp/cmd"
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/elhmn/ckp/internal/store"
+	"github.com/elhmn/ckp/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEditCommand(t *testing.T) {
 	t.Run("make sure that it runs successfully for code edition", func(t *testing.T) {
-		conf, mockedExec := createConfig(t)
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
+		mockedPrinters := conf.Printers.(*mocks.MockIPrinters)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -30,6 +33,7 @@ func TestEditCommand(t *testing.T) {
 			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
+			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any()).Return(0, "", nil),
 		)
 
 		command := cmd.NewEditCommand(conf)
@@ -71,7 +75,9 @@ func TestEditCommand(t *testing.T) {
 	})
 
 	t.Run("make sure that it runs successfully for solution edition", func(t *testing.T) {
-		conf, mockedExec := createConfig(t)
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
+		mockedPrinters := conf.Printers.(*mocks.MockIPrinters)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -88,6 +94,7 @@ func TestEditCommand(t *testing.T) {
 			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
+			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any()).Return(1, "", nil),
 		)
 
 		command := cmd.NewEditCommand(conf)
@@ -119,6 +126,49 @@ func TestEditCommand(t *testing.T) {
 		script := s.Scripts[1]
 		assert.Equal(t, "a_solution", script.Solution.Content)
 		assert.Equal(t, "a_comment", script.Comment)
+
+		//function call assert
+		if err := deleteFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+	})
+
+	t.Run("make sure that it runs successfully without entryID", func(t *testing.T) {
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
+		mockedPrinters := conf.Printers.(*mocks.MockIPrinters)
+		writer := &bytes.Buffer{}
+		conf.OutWriter = writer
+
+		if err := setupFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
+		//Specify expectations
+		gomock.InOrder(
+			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "pull", "--rebase", "origin", "main"),
+			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any()).Return(0, "", nil),
+			mockedExec.EXPECT().OpenEditor(gomock.Any(), gomock.Any()).Return(nil),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
+		)
+
+		command := cmd.NewEditCommand(conf)
+		//Set writer
+		command.SetOutput(conf.OutWriter)
+
+		err := command.Execute()
+		if err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
+		got := writer.String()
+		exp := "\nYour entry was successfully edited!\n"
+		assert.Contains(t, got, exp)
 
 		//function call assert
 		if err := deleteFolder(conf); err != nil {

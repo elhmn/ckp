@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/elhmn/ckp/cmd"
+	"github.com/elhmn/ckp/mocks"
 	"github.com/golang/mock/gomock"
 )
 
@@ -15,7 +16,8 @@ func TestInitCommand(t *testing.T) {
 	fakeRemoteFolder := "https://github.com/elhmn/fakefolder"
 
 	t.Run("initialised successfully", func(t *testing.T) {
-		conf, mockedExec := createConfig(t)
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -50,7 +52,8 @@ func TestInitCommand(t *testing.T) {
 	})
 
 	t.Run("failed to create folder", func(t *testing.T) {
-		conf, mockedExec := createConfig(t)
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -88,7 +91,8 @@ func TestInitCommand(t *testing.T) {
 	})
 
 	t.Run("failed to clone remote repository", func(t *testing.T) {
-		conf, mockedExec := createConfig(t)
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 

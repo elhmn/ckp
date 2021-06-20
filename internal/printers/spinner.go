@@ -21,9 +21,9 @@ type Spinner struct {
 }
 
 //NewSpinner returns a new Spinner
-func NewSpinner() Spinner {
+func NewSpinner() *Spinner {
 	spin := Spinner{s: spinner.New(spinner.CharSets[11], 100*time.Millisecond)}
-	return spin
+	return &spin
 }
 
 //Message will set the spinner suffix message

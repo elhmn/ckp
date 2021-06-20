@@ -15,14 +15,14 @@ var defaultPrinters = Printers{}
 
 type IPrinters interface {
 	Confirm(message string) bool
-	SelectScriptEntry(scripts []store.Script) (int, error)
+	SelectScriptEntry(scripts []store.Script) (int, string, error)
 }
 
 type Printers struct{}
 
 //NewPrinters returns new printers struct
-func NewPrinters() Printers {
-	return Printers{}
+func NewPrinters() *Printers {
+	return &Printers{}
 }
 
 func (p Printers) Confirm(message string) bool {

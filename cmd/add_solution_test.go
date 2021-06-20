@@ -5,13 +5,15 @@ import (
 	"testing"
 
 	"github.com/elhmn/ckp/cmd"
+	"github.com/elhmn/ckp/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAddSolutionCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully", func(t *testing.T) {
-		conf, mockedExec := createConfig(t)
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 

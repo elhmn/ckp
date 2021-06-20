@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/elhmn/ckp/internal/config"
-	"github.com/elhmn/ckp/internal/printers"
 	"github.com/elhmn/ckp/internal/store"
 	"github.com/spf13/cobra"
 )
@@ -129,7 +128,7 @@ func removeScriptEntry(scripts []store.Script, index int) []store.Script {
 func getScriptEntryIndex(conf config.Config, scripts []store.Script, entryID string) (int, error) {
 	if entryID == "" {
 		conf.Spin.Stop()
-		index, _, err := printers.SelectScriptEntry(scripts)
+		index, _, err := conf.Printers.SelectScriptEntry(scripts)
 		if err != nil {
 			return index, fmt.Errorf("failed to select entry: %s", err)
 		}

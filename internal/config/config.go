@@ -25,6 +25,7 @@ type Config struct {
 	CKPDir           string
 	CKPStorageFolder string
 	Spin             printers.ISpinner
+	Printers         printers.IPrinters
 
 	//MainBranch is a your remote repository main branch
 	MainBranch string
@@ -45,6 +46,7 @@ func NewDefaultConfig() Config {
 	return Config{
 		Exec:             exec.NewExec(),
 		Spin:             printers.NewSpinner(),
+		Printers:         printers.NewPrinters(),
 		OutWriter:        os.Stdout,
 		ErrWriter:        os.Stderr,
 		CKPDir:           ".ckp",

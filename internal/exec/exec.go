@@ -20,8 +20,8 @@ type IExec interface {
 type Exec struct{}
 
 //NewExec returns a new Exec
-func NewExec() Exec {
-	return Exec{}
+func NewExec() *Exec {
+	return &Exec{}
 }
 
 //CreateFolderIfDoesNotExist checks, will check that a folder exist and create the folder if it does not exist

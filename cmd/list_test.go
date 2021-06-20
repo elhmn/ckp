@@ -9,7 +9,7 @@ import (
 
 func TestListCommand(t *testing.T) {
 	t.Run("make sure that is runs successfully with limit 12", func(t *testing.T) {
-		conf, _ := createConfig(t)
+		conf := createConfig(t)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 
@@ -35,7 +35,7 @@ func TestListCommand(t *testing.T) {
 	})
 
 	t.Run("make sure that is runs successfully with --all flag set", func(t *testing.T) {
-		conf, _ := createConfig(t)
+		conf := createConfig(t)
 		writer := &bytes.Buffer{}
 		conf.OutWriter = writer
 

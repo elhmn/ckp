@@ -49,12 +49,13 @@ func (mr *MockIPrintersMockRecorder) Confirm(message interface{}) *gomock.Call {
 }
 
 // SelectScriptEntry mocks base method.
-func (m *MockIPrinters) SelectScriptEntry(scripts []store.Script) (int, error) {
+func (m *MockIPrinters) SelectScriptEntry(scripts []store.Script) (int, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SelectScriptEntry", scripts)
 	ret0, _ := ret[0].(int)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // SelectScriptEntry indicates an expected call of SelectScriptEntry.

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/elhmn/ckp/internal/config"
-	"github.com/elhmn/ckp/internal/printers"
 	"github.com/elhmn/ckp/internal/store"
 	"github.com/spf13/cobra"
 )
@@ -64,7 +63,7 @@ func findCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 
 	scripts := storeData.Scripts
 
-	_, result, err := printers.SelectScriptEntry(scripts)
+	_, result, err := conf.Printers.SelectScriptEntry(scripts)
 	if err != nil {
 		return fmt.Errorf("prompt failed %v", err)
 	}
