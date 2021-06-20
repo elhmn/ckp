@@ -26,7 +26,6 @@ func NewEditCommand(conf config.Config) *cobra.Command {
 		example: ckp edit <entry_id>
 		Will edit the entry corresponding the entry_id
 `,
-		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := editCommand(cmd, args, conf); err != nil {
 				fmt.Fprintf(conf.OutWriter, "Error: %s\n", err)
