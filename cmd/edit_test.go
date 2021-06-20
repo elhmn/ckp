@@ -51,7 +51,7 @@ func TestEditCommand(t *testing.T) {
 
 		got := writer.String()
 		exp := "\nYour entry was successfully edited!\n"
-		assert.Equal(t, exp, got)
+		assert.Contains(t, got, exp)
 
 		//Test that the store was correctly edited
 		filePath, _ := config.GetStoreFilePath(conf)
@@ -108,7 +108,7 @@ func TestEditCommand(t *testing.T) {
 
 		got := writer.String()
 		exp := "\nYour entry was successfully edited!\n"
-		assert.Equal(t, exp, got)
+		assert.Contains(t, got, exp)
 
 		//Test that the store was correctly edited
 		filePath, _ := config.GetStoreFilePath(conf)

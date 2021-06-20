@@ -105,7 +105,17 @@ func GetStoreDirPath(conf Config) (string, error) {
 		return "", fmt.Errorf("failed to read home directory: %s", err)
 	}
 
-	//Create ckp folder if it does not exist
 	dir := fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, conf.CKPStorageFolder)
+	return dir, nil
+}
+
+//GetDirPath returns the path of the .ckp folder
+func GetDirPath(conf Config) (string, error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return "", fmt.Errorf("failed to read home directory: %s", err)
+	}
+
+	dir := fmt.Sprintf("%s/%s", home, conf.CKPDir)
 	return dir, nil
 }

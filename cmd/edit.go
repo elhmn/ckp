@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"strings"
 
 	"os"
 	"time"
@@ -11,6 +13,39 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
+
+const editorFileTemplate = `## You are editing the entry
+## id:%s
+##
+##----------------------------------------------------------------------
+## Add your comment
+##----------------------------------------------------------------------
+
+%s
+
+##----------------------------------------------------------------------
+## Set an alias
+##----------------------------------------------------------------------
+
+%s
+
+##----------------------------------------------------------------------
+## Here goes your code entry
+##----------------------------------------------------------------------
+
+%s
+
+##----------------------------------------------------------------------
+## Here goes your solution entry
+##----------------------------------------------------------------------
+
+%s
+
+##----------------------------------------------------------------------
+## Note that you can't set both
+## a code and solution entry
+## the code entry will take precedence
+`
 
 //NewEditCommand create new cobra command for the edit command
 func NewEditCommand(conf config.Config) *cobra.Command {
@@ -98,10 +133,19 @@ func editCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 		return fmt.Errorf("failed to get script `%s` entry index: %s", entryID, err)
 	}
 
+	//if it is an interactive update
+	if len(args) == 0 {
+		s, err := getNewEntryDataFromFile(conf, storeData.Scripts[index])
+		if err != nil {
+			return fmt.Errorf("failed to get new entry from the editor %s", err)
+		}
+		storeData.Scripts[index] = s
+	}
+
 	//Remove script entry
 	storeData.Scripts, err = editScriptEntry(flags, storeData.Scripts, index)
 	if err != nil {
-		return fmt.Errorf("failed to editScriptEntry: %s", err)
+		return fmt.Errorf("failed to edit script entry: %s", err)
 	}
 
 	tempFile, err := createTempFile(conf, storeBytes)
@@ -127,6 +171,7 @@ func editCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	conf.Spin.Message(" local changes pushed")
 
 	fmt.Fprintf(conf.OutWriter, "\nYour entry was successfully edited!\n")
+	fmt.Fprintf(conf.OutWriter, "\n%s", storeData.Scripts[index])
 	return nil
 }
 
@@ -195,16 +240,17 @@ func createNewEntry(flags *pflag.FlagSet, script store.Script) (store.Script, er
 		return store.Script{}, fmt.Errorf("failed to generate idem potent id: %s", err)
 	}
 
-	if solution != "" {
+	if code != "" {
 		return store.Script{
 			ID:           id,
 			Comment:      comment,
 			CreationTime: timeNow,
 			UpdateTime:   timeNow,
-			Solution: store.Solution{
-				Content: solution,
+			Code: store.Code{
+				Content: code,
+				Alias:   alias,
 			},
-			Code: store.Code{},
+			Solution: store.Solution{},
 		}, nil
 	}
 
@@ -213,10 +259,133 @@ func createNewEntry(flags *pflag.FlagSet, script store.Script) (store.Script, er
 		Comment:      comment,
 		CreationTime: timeNow,
 		UpdateTime:   timeNow,
-		Code: store.Code{
-			Content: code,
-			Alias:   alias,
+		Solution: store.Solution{
+			Content: solution,
 		},
-		Solution: store.Solution{},
+		Code: store.Code{},
 	}, nil
+}
+
+func getNewEntryDataFromFile(conf config.Config, origEntry store.Script) (store.Script, error) {
+	s := origEntry
+
+	content := fmt.Sprintf(editorFileTemplate, origEntry.ID, origEntry.Comment, origEntry.Code.Alias, origEntry.Code.Content, origEntry.Solution.Content)
+	dir, err := config.GetDirPath(conf)
+	if err != nil {
+		return s, err
+	}
+	destination := fmt.Sprintf("%s/entry.%s.sh", dir, origEntry.ID)
+
+	//Create the file with the original script data
+	if err = ioutil.WriteFile(destination, []byte(content), 0666); err != nil {
+		return s, fmt.Errorf("failed to write to file %s: %s", destination, err)
+	}
+
+	//Open and edit that file
+	err = conf.Exec.OpenEditor("", destination)
+	if err != nil {
+		return s, err
+	}
+
+	s, err = parseDataFromEditorTemplateFile(destination)
+	if err != nil {
+		return s, fmt.Errorf("failed to parse data from template file file %s: %s", destination, err)
+	}
+
+	//Delete the temporary file
+	if err := os.RemoveAll(destination); err != nil {
+		return s, fmt.Errorf("failed to delete file %s: %s", destination, err)
+	}
+
+	return s, nil
+}
+
+func parseDataFromEditorTemplateFile(filepath string) (store.Script, error) {
+	//get store from template file
+	if _, err := os.Stat(filepath); os.IsNotExist(err) {
+		return store.Script{}, err
+	}
+
+	data, err := ioutil.ReadFile(filepath)
+	if err != nil {
+		return store.Script{}, fmt.Errorf("failed to read file: %s", err)
+	}
+
+	return parseDataFromEditorTemplateString(string(data)), nil
+}
+
+func parseDataFromEditorTemplateString(data string) store.Script {
+	lines := strings.Split(data, "\n")
+
+	//get comment
+	i := moveToNextEntry(lines, 0)
+	comment, i := getEntry(lines, i)
+
+	//get alias
+	i = moveToNextEntry(lines, i)
+	alias, i := getEntry(lines, i)
+
+	//get code
+	i = moveToNextEntry(lines, i)
+	code, i := getEntry(lines, i)
+
+	//get solution
+	i = moveToNextEntry(lines, i)
+	solution, _ := getEntry(lines, i)
+
+	if code != "" {
+		return store.Script{
+			Comment: comment,
+			Code: store.Code{
+				Content: code,
+				Alias:   alias,
+			},
+			Solution: store.Solution{},
+		}
+	}
+
+	return store.Script{
+		Comment: comment,
+		Solution: store.Solution{
+			Content: solution,
+		},
+		Code: store.Code{},
+	}
+}
+
+//moveToNextEntry skips comments and return the index to the next valid line
+func moveToNextEntry(lines []string, i int) int {
+	if i >= len(lines) {
+		return i - 1
+	}
+
+	for i := i; i < len(lines); i++ {
+		line := lines[i]
+		//if "##" is not at the beginning of the line
+		if strings.Index(line, "##") != 0 {
+			return i
+		}
+	}
+
+	return i
+}
+
+//getEntry returns the entry and returns an index to the next line
+func getEntry(lines []string, i int) (string, int) {
+	entry := ""
+	if i >= len(lines) {
+		return entry, i - 1
+	}
+
+	for i := i; i < len(lines); i++ {
+		line := lines[i]
+		//if "##" is at the beginning of the line
+		if strings.Index(line, "##") == 0 {
+			return strings.Trim(entry, "\n"), i
+		}
+
+		entry += line + "\n"
+	}
+
+	return strings.Trim(entry, "\n"), i
 }

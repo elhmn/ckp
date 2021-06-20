@@ -13,8 +13,10 @@ type IExec interface {
 	DoGitPush(dir string, args ...string) (string, error)
 	DoGit(dir string, args ...string) (string, error)
 	CreateFolderIfDoesNotExist(dir string) error
+	OpenEditor(editor string, args ...string) error
 }
 
+//Exec struct
 type Exec struct{}
 
 //NewExec returns a new Exec
