@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/elhmn/ckp/internal/printers"
 	"github.com/elhmn/ckp/internal/store"
 	"github.com/stretchr/testify/assert"
 )
@@ -48,7 +49,7 @@ func TestDoesScriptContain(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(fmt.Sprintf("%d - test for \"%s\" equal %v", i, test.Input, test.Exp), func(t *testing.T) {
-			assert.Equal(t, test.Exp, doesScriptContain(test.S, test.Input))
+			assert.Equal(t, test.Exp, printers.DoesScriptContain(test.S, test.Input))
 		})
 	}
 }
