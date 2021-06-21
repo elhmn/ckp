@@ -280,6 +280,8 @@ func getNewEntryDataFromFile(conf config.Config, origEntry store.Script, templat
 	switch templateType {
 	case CodeEntryTemplateType:
 		content = fmt.Sprintf(editorFileCodeTemplate, origEntry.Comment, origEntry.Code.Alias, origEntry.Code.Content)
+	case SolutionEntryTemplateType:
+		content = fmt.Sprintf(editorFileSolutionTemplate, origEntry.Comment, origEntry.Solution.Content)
 	case EntryTemplateType:
 		content = fmt.Sprintf(editorFileTemplate, origEntry.ID, origEntry.Comment, origEntry.Code.Alias, origEntry.Code.Content, origEntry.Solution.Content)
 	}
@@ -328,6 +330,8 @@ func parseDataFromEditorTemplateFile(filepath string, templateType string) (stor
 	switch templateType {
 	case CodeEntryTemplateType:
 		return parseCodeDataFromEditorTemplateString(string(data)), nil
+	case SolutionEntryTemplateType:
+		return parseSolutionDataFromEditorTemplateString(string(data)), nil
 	}
 
 	return parseDataFromEditorTemplateString(string(data)), nil
@@ -394,6 +398,26 @@ func parseCodeDataFromEditorTemplateString(data string) store.Script {
 			Alias:   alias,
 		},
 		Solution: store.Solution{},
+	}
+}
+
+func parseSolutionDataFromEditorTemplateString(data string) store.Script {
+	lines := strings.Split(data, "\n")
+
+	//get comment
+	i := moveToNextEntry(lines, 0)
+	comment, i := getEntry(lines, i)
+
+	//get solution
+	i = moveToNextEntry(lines, i)
+	solution, _ := getEntry(lines, i)
+
+	return store.Script{
+		Comment: comment,
+		Solution: store.Solution{
+			Content: solution,
+		},
+		Code: store.Code{},
 	}
 }
 

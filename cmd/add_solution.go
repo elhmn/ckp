@@ -14,6 +14,22 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
+const editorFileSolutionTemplate = `## You are adding a solution entry
+##
+##----------------------------------------------------------------------
+## Add your comment
+##----------------------------------------------------------------------
+
+%s
+
+##----------------------------------------------------------------------
+## Here goes your solution entry
+##----------------------------------------------------------------------
+
+%s
+
+`
+
 //NewAddSolutionCommand adds everything that written after --solution or --solution flag
 func NewAddSolutionCommand(conf config.Config) *cobra.Command {
 	command := &cobra.Command{
@@ -91,6 +107,26 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 		return fmt.Errorf("failed to create new script entry: %s", err)
 	}
 
+	//if it is an interactive update
+	if len(args) == 0 {
+		conf.Spin.Stop()
+		s, err := getNewEntryDataFromFile(conf, script, SolutionEntryTemplateType)
+		if err != nil {
+			return fmt.Errorf("failed to get new entry from the editor %s", err)
+		}
+
+		//Generate an ID for the newly added script
+		s.ID, err = store.GenereateIdempotentID("", s.Comment, "", s.Solution.Content)
+		if err != nil {
+			return fmt.Errorf("failed to generate idem potent ID: %s", err)
+		}
+
+		script.ID = s.ID
+		script.Solution = s.Solution
+		script.Comment = s.Comment
+		conf.Spin.Start()
+	}
+
 	if storeData.EntryAlreadyExist(script.ID) {
 		//Delete the temporary file
 		if err := os.RemoveAll(tempFile); err != nil {
@@ -122,6 +158,7 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	conf.Spin.Message(" local changes pushed")
 
 	fmt.Fprintln(conf.OutWriter, "\nYour solution was successfully added!")
+	fmt.Fprintf(conf.OutWriter, "\n%s", script)
 	return nil
 }
 
