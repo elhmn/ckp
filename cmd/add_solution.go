@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/briandowns/spinner"
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/elhmn/ckp/internal/printers"
 	"github.com/elhmn/ckp/internal/store"
@@ -56,9 +55,8 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	}
 
 	//Setup spinner
-	spin := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
-	spin.Start()
-	defer spin.Stop()
+	conf.Spin.Start()
+	defer conf.Spin.Stop()
 
 	dir, err := config.GetStoreDirPath(conf)
 	if err != nil {
@@ -70,14 +68,14 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 		return fmt.Errorf("failed get store file path: %s", err)
 	}
 
-	spin.Suffix = " pulling remote changes..."
+	conf.Spin.Message(" pulling remote changes...")
 	err = pullRemoteChanges(conf, dir, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to pull remote changes: %s", err)
 	}
-	spin.Suffix = " remote changes pulled"
+	conf.Spin.Message(" remote changes pulled")
 
-	spin.Suffix = " adding new solution entry..."
+	conf.Spin.Message(" adding new solution entry...")
 	_, storeData, storeBytes, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
@@ -114,14 +112,14 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	if err := os.RemoveAll(tempFile); err != nil {
 		return fmt.Errorf("failed to delete file %s: %s", tempFile, err)
 	}
-	spin.Suffix = " new entry successfully added"
+	conf.Spin.Message(" new entry successfully added")
 
-	spin.Suffix = " pushing local changes..."
+	conf.Spin.Message(" pushing local changes...")
 	err = pushLocalChanges(conf, dir, commitAddAction, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
-	spin.Suffix = " local changes pushed"
+	conf.Spin.Message(" local changes pushed")
 
 	fmt.Fprintln(conf.OutWriter, "\nYour solution was successfully added!")
 	return nil
