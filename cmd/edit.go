@@ -14,6 +14,12 @@ import (
 	"github.com/spf13/pflag"
 )
 
+const (
+	EntryTemplateType         = "EntryTemplateType"
+	CodeEntryTemplateType     = "CodeEntryTemplateType"
+	SolutionEntryTemplateType = "SolutionEntryTemplateType"
+)
+
 const editorFileTemplate = `## You are editing the entry
 ## id:%s
 ##
@@ -135,7 +141,7 @@ func editCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 
 	//if it is an interactive update
 	if len(args) == 0 {
-		s, err := getNewEntryDataFromFile(conf, storeData.Scripts[index])
+		s, err := getNewEntryDataFromFile(conf, storeData.Scripts[index], EntryTemplateType)
 		if err != nil {
 			return fmt.Errorf("failed to get new entry from the editor %s", err)
 		}
@@ -266,10 +272,18 @@ func createNewEntry(flags *pflag.FlagSet, script store.Script) (store.Script, er
 	}, nil
 }
 
-func getNewEntryDataFromFile(conf config.Config, origEntry store.Script) (store.Script, error) {
+func getNewEntryDataFromFile(conf config.Config, origEntry store.Script, templateType string) (store.Script, error) {
 	s := origEntry
+	content := ""
 
-	content := fmt.Sprintf(editorFileTemplate, origEntry.ID, origEntry.Comment, origEntry.Code.Alias, origEntry.Code.Content, origEntry.Solution.Content)
+	//Get template content
+	switch templateType {
+	case CodeEntryTemplateType:
+		content = fmt.Sprintf(editorFileCodeTemplate, origEntry.Comment, origEntry.Code.Alias, origEntry.Code.Content)
+	case EntryTemplateType:
+		content = fmt.Sprintf(editorFileTemplate, origEntry.ID, origEntry.Comment, origEntry.Code.Alias, origEntry.Code.Content, origEntry.Solution.Content)
+	}
+
 	dir, err := config.GetDirPath(conf)
 	if err != nil {
 		return s, err
@@ -287,7 +301,7 @@ func getNewEntryDataFromFile(conf config.Config, origEntry store.Script) (store.
 		return s, err
 	}
 
-	s, err = parseDataFromEditorTemplateFile(destination)
+	s, err = parseDataFromEditorTemplateFile(destination, templateType)
 	if err != nil {
 		return s, fmt.Errorf("failed to parse data from template file file %s: %s", destination, err)
 	}
@@ -300,7 +314,7 @@ func getNewEntryDataFromFile(conf config.Config, origEntry store.Script) (store.
 	return s, nil
 }
 
-func parseDataFromEditorTemplateFile(filepath string) (store.Script, error) {
+func parseDataFromEditorTemplateFile(filepath string, templateType string) (store.Script, error) {
 	//get store from template file
 	if _, err := os.Stat(filepath); os.IsNotExist(err) {
 		return store.Script{}, err
@@ -309,6 +323,11 @@ func parseDataFromEditorTemplateFile(filepath string) (store.Script, error) {
 	data, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return store.Script{}, fmt.Errorf("failed to read file: %s", err)
+	}
+
+	switch templateType {
+	case CodeEntryTemplateType:
+		return parseCodeDataFromEditorTemplateString(string(data)), nil
 	}
 
 	return parseDataFromEditorTemplateString(string(data)), nil
@@ -350,6 +369,31 @@ func parseDataFromEditorTemplateString(data string) store.Script {
 			Content: solution,
 		},
 		Code: store.Code{},
+	}
+}
+
+func parseCodeDataFromEditorTemplateString(data string) store.Script {
+	lines := strings.Split(data, "\n")
+
+	//get comment
+	i := moveToNextEntry(lines, 0)
+	comment, i := getEntry(lines, i)
+
+	//get alias
+	i = moveToNextEntry(lines, i)
+	alias, i := getEntry(lines, i)
+
+	//get code
+	i = moveToNextEntry(lines, i)
+	code, i := getEntry(lines, i)
+
+	return store.Script{
+		Comment: comment,
+		Code: store.Code{
+			Content: code,
+			Alias:   alias,
+		},
+		Solution: store.Solution{},
 	}
 }
 
