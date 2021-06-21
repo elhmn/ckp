@@ -108,7 +108,55 @@ func TestAddCodeCommand(t *testing.T) {
 
 		got := writer.String()
 		exp := "\nYour code was successfully added!\n"
-		assert.Equal(t, exp, got)
+		assert.Contains(t, got, exp)
+
+		//function call assert
+		if err := deleteFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+	})
+
+	t.Run("make sure that it runs successfully without code arguument", func(t *testing.T) {
+		conf := createConfig(t)
+		mockedExec := conf.Exec.(*mocks.MockIExec)
+		writer := &bytes.Buffer{}
+		conf.OutWriter = writer
+
+		if err := setupFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
+		//Specify expectations
+		gomock.InOrder(
+			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "pull", "--rebase", "origin", "main"),
+			mockedExec.EXPECT().OpenEditor(gomock.Any(), gomock.Any()).Return(nil),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
+			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
+		)
+
+		commandName := "code"
+		command := cmd.NewAddCommand(conf)
+		//Set writer
+		command.SetOutput(conf.OutWriter)
+
+		//Set args
+		command.SetArgs([]string{commandName,
+			"--comment", "a_comment",
+			"--alias", "an_alias",
+		})
+
+		err := command.Execute()
+		if err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
+		got := writer.String()
+		exp := "\nYour code was successfully added!\n"
+		assert.Contains(t, got, exp)
 
 		//function call assert
 		if err := deleteFolder(conf); err != nil {

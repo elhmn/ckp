@@ -7,13 +7,34 @@ import (
 	"strings"
 	"time"
 
-	"github.com/briandowns/spinner"
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/elhmn/ckp/internal/printers"
 	"github.com/elhmn/ckp/internal/store"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 )
+
+const editorFileCodeTemplate = `## You are adding a code entry
+##
+##----------------------------------------------------------------------
+## Add your comment
+##----------------------------------------------------------------------
+
+%s
+
+##----------------------------------------------------------------------
+## Set an alias
+##----------------------------------------------------------------------
+
+%s
+
+##----------------------------------------------------------------------
+## Here goes your code entry
+##----------------------------------------------------------------------
+
+%s
+
+`
 
 //NewAddCodeCommand adds everything that written after --code or --solution flag
 func NewAddCodeCommand(conf config.Config) *cobra.Command {
@@ -60,9 +81,8 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 	}
 
 	//Setup spinner
-	spin := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
-	spin.Start()
-	defer spin.Stop()
+	conf.Spin.Start()
+	defer conf.Spin.Stop()
 
 	dir, err := config.GetStoreDirPath(conf)
 	if err != nil {
@@ -74,14 +94,14 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 		return fmt.Errorf("failed get store file path: %s", err)
 	}
 
-	spin.Suffix = " pulling remote changes..."
+	conf.Spin.Message(" pulling remote changes...")
 	err = pullRemoteChanges(conf, dir, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to pull remote changes: %s", err)
 	}
-	spin.Suffix = " remote changes pulled"
+	conf.Spin.Message(" remote changes pulled")
 
-	spin.Suffix = " adding new code entry..."
+	conf.Spin.Message(" adding new code entry...")
 	storeFile, storeData, storeBytes, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
@@ -97,6 +117,27 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 		return fmt.Errorf("failed to create new script entry: %s", err)
 	}
 
+	//if it is an interactive update
+	if len(args) == 0 {
+		conf.Spin.Stop()
+		s, err := getNewEntryDataFromFile(conf, script, CodeEntryTemplateType)
+		if err != nil {
+			return fmt.Errorf("failed to get new entry from the editor %s", err)
+		}
+
+		//Generate an ID for the newly added script
+		s.ID, err = store.GenereateIdempotentID(s.Code.Content, s.Comment, s.Code.Alias, "")
+		if err != nil {
+			return fmt.Errorf("failed to generate idem potent ID: %s", err)
+		}
+
+		script.ID = s.ID
+		script.Code = s.Code
+		script.Comment = s.Comment
+		conf.Spin.Start()
+	}
+
+	//Check if entry already exist
 	if storeData.EntryAlreadyExist(script.ID) {
 		//Delete the temporary file
 		if err := os.RemoveAll(tempFile); err != nil {
@@ -118,16 +159,18 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 	if err := os.RemoveAll(tempFile); err != nil {
 		return fmt.Errorf("failed to delete file %s: %s", tempFile, err)
 	}
-	spin.Suffix = " new entry successfully added"
+	conf.Spin.Message(" new entry successfully added")
 
-	spin.Suffix = " pushing local changes..."
+	//Push changes
+	conf.Spin.Message(" pushing local changes...")
 	err = pushLocalChanges(conf, dir, commitAddAction, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
-	spin.Suffix = " local changes pushed"
+	conf.Spin.Message(" local changes pushed")
 
 	fmt.Fprintln(conf.OutWriter, "\nYour code was successfully added!")
+	fmt.Fprintf(conf.OutWriter, "\n%s", script)
 	return nil
 }
 

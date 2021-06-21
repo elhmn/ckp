@@ -7,13 +7,28 @@ import (
 	"strings"
 	"time"
 
-	"github.com/briandowns/spinner"
 	"github.com/elhmn/ckp/internal/config"
 	"github.com/elhmn/ckp/internal/printers"
 	"github.com/elhmn/ckp/internal/store"
 	"github.com/spf13/cobra"
 	flag "github.com/spf13/pflag"
 )
+
+const editorFileSolutionTemplate = `## You are adding a solution entry
+##
+##----------------------------------------------------------------------
+## Add your comment
+##----------------------------------------------------------------------
+
+%s
+
+##----------------------------------------------------------------------
+## Here goes your solution entry
+##----------------------------------------------------------------------
+
+%s
+
+`
 
 //NewAddSolutionCommand adds everything that written after --solution or --solution flag
 func NewAddSolutionCommand(conf config.Config) *cobra.Command {
@@ -56,9 +71,8 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	}
 
 	//Setup spinner
-	spin := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
-	spin.Start()
-	defer spin.Stop()
+	conf.Spin.Start()
+	defer conf.Spin.Stop()
 
 	dir, err := config.GetStoreDirPath(conf)
 	if err != nil {
@@ -70,14 +84,14 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 		return fmt.Errorf("failed get store file path: %s", err)
 	}
 
-	spin.Suffix = " pulling remote changes..."
+	conf.Spin.Message(" pulling remote changes...")
 	err = pullRemoteChanges(conf, dir, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to pull remote changes: %s", err)
 	}
-	spin.Suffix = " remote changes pulled"
+	conf.Spin.Message(" remote changes pulled")
 
-	spin.Suffix = " adding new solution entry..."
+	conf.Spin.Message(" adding new solution entry...")
 	_, storeData, storeBytes, err := loadStore(storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load the store: %s", err)
@@ -91,6 +105,26 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	script, err := createNewSolutionScriptEntry(solution, flags)
 	if err != nil {
 		return fmt.Errorf("failed to create new script entry: %s", err)
+	}
+
+	//if it is an interactive update
+	if len(args) == 0 {
+		conf.Spin.Stop()
+		s, err := getNewEntryDataFromFile(conf, script, SolutionEntryTemplateType)
+		if err != nil {
+			return fmt.Errorf("failed to get new entry from the editor %s", err)
+		}
+
+		//Generate an ID for the newly added script
+		s.ID, err = store.GenereateIdempotentID("", s.Comment, "", s.Solution.Content)
+		if err != nil {
+			return fmt.Errorf("failed to generate idem potent ID: %s", err)
+		}
+
+		script.ID = s.ID
+		script.Solution = s.Solution
+		script.Comment = s.Comment
+		conf.Spin.Start()
 	}
 
 	if storeData.EntryAlreadyExist(script.ID) {
@@ -114,16 +148,17 @@ func addSolutionCommand(cmd *cobra.Command, args []string, conf config.Config) e
 	if err := os.RemoveAll(tempFile); err != nil {
 		return fmt.Errorf("failed to delete file %s: %s", tempFile, err)
 	}
-	spin.Suffix = " new entry successfully added"
+	conf.Spin.Message(" new entry successfully added")
 
-	spin.Suffix = " pushing local changes..."
+	conf.Spin.Message(" pushing local changes...")
 	err = pushLocalChanges(conf, dir, commitAddAction, storeFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to push local changes: %s", err)
 	}
-	spin.Suffix = " local changes pushed"
+	conf.Spin.Message(" local changes pushed")
 
 	fmt.Fprintln(conf.OutWriter, "\nYour solution was successfully added!")
+	fmt.Fprintf(conf.OutWriter, "\n%s", script)
 	return nil
 }
 
