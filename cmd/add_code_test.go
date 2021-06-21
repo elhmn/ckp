@@ -108,7 +108,7 @@ func TestAddCodeCommand(t *testing.T) {
 
 		got := writer.String()
 		exp := "\nYour code was successfully added!\n"
-		assert.Equal(t, exp, got)
+		assert.Contains(t, got, exp)
 
 		//function call assert
 		if err := deleteFolder(conf); err != nil {
