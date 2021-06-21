@@ -171,7 +171,7 @@ func editCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	conf.Spin.Message(" local changes pushed")
 
 	fmt.Fprintf(conf.OutWriter, "\nYour entry was successfully edited!\n")
-	fmt.Fprintf(conf.OutWriter, "\n%s", storeData.Scripts[index])
+	fmt.Fprintf(conf.OutWriter, "\n%s", storeData.Scripts[len(storeData.Scripts)-1])
 	return nil
 }
 
