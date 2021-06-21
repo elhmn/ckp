@@ -385,7 +385,7 @@ func parseCodeDataFromEditorTemplateString(data string) store.Script {
 
 	//get code
 	i = moveToNextEntry(lines, i)
-	code, i := getEntry(lines, i)
+	code, _ := getEntry(lines, i)
 
 	return store.Script{
 		Comment: comment,
