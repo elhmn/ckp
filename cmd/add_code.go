@@ -14,26 +14,9 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-const editorFileCodeTemplate = `## You are adding a code entry
-##
-##----------------------------------------------------------------------
-## Add your comment
-##----------------------------------------------------------------------
-
+const editorFileCodeTemplate = `## comment: %s
+## alias: %s
 %s
-
-##----------------------------------------------------------------------
-## Set an alias
-##----------------------------------------------------------------------
-
-%s
-
-##----------------------------------------------------------------------
-## Here goes your code entry
-##----------------------------------------------------------------------
-
-%s
-
 `
 
 //NewAddCodeCommand adds everything that written after --code or --solution flag
