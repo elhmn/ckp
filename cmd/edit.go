@@ -380,16 +380,13 @@ func parseCodeDataFromEditorTemplateString(data string) store.Script {
 	lines := strings.Split(data, "\n")
 
 	//get comment
-	i := moveToNextEntry(lines, 0)
-	comment, i := getEntry(lines, i)
+	comment, _ := getComment(lines)
 
 	//get alias
-	i = moveToNextEntry(lines, i)
-	alias, i := getEntry(lines, i)
+	alias, _ := getAlias(lines)
 
 	//get code
-	i = moveToNextEntry(lines, i)
-	code, _ := getEntry(lines, i)
+	code := getCode(lines)
 
 	return store.Script{
 		Comment: comment,
@@ -405,12 +402,10 @@ func parseSolutionDataFromEditorTemplateString(data string) store.Script {
 	lines := strings.Split(data, "\n")
 
 	//get comment
-	i := moveToNextEntry(lines, 0)
-	comment, i := getEntry(lines, i)
+	comment, _ := getComment(lines)
 
 	//get solution
-	i = moveToNextEntry(lines, i)
-	solution, _ := getEntry(lines, i)
+	solution := getSolution(lines)
 
 	return store.Script{
 		Comment: comment,
@@ -436,6 +431,64 @@ func moveToNextEntry(lines []string, i int) int {
 	}
 
 	return i
+}
+
+//getComment iterate over the file content and returns the first `## comment:` line
+// it returns the comment it found or an error if no comment was founds
+func getComment(lines []string) (string, error) {
+	for _, line := range lines {
+		if strings.Contains(line, "## comment") {
+			s := strings.Split(line, ":")
+			if len(s) >= 2 {
+				return strings.Join(s[1:], ""), nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("comment not found")
+}
+
+//getAlias iterate over the file content and returns the first `## alias:` line
+// it returns the alias it found or an error if no alias was founds
+func getAlias(lines []string) (string, error) {
+	for _, line := range lines {
+		if strings.Contains(line, "## alias") {
+			s := strings.Split(line, ":")
+			if len(s) >= 2 {
+				return strings.Join(s[1:], ""), nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("alias not found")
+}
+
+//getCode iterate over the file content and returns
+//everything that does not start with "##" as a code
+func getCode(lines []string) string {
+	code := ""
+	for _, line := range lines {
+		//if "##" is at the beginning of the line
+		if strings.Index(line, "##") != 0 {
+			code += line + "\n"
+		}
+	}
+
+	return strings.Trim(code, "\n")
+}
+
+//getSolution iterate over the file content and returns
+//everything that does not start with "##" as a solution
+func getSolution(lines []string) string {
+	solution := ""
+	for _, line := range lines {
+		//if "##" is at the beginning of the line
+		if strings.Index(line, "##") != 0 {
+			solution += line + "\n"
+		}
+	}
+
+	return strings.Trim(solution, "\n")
 }
 
 //getEntry returns the entry and returns an index to the next line

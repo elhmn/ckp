@@ -14,20 +14,8 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-const editorFileSolutionTemplate = `## You are adding a solution entry
-##
-##----------------------------------------------------------------------
-## Add your comment
-##----------------------------------------------------------------------
-
+const editorFileSolutionTemplate = `## comment: %s
 %s
-
-##----------------------------------------------------------------------
-## Here goes your solution entry
-##----------------------------------------------------------------------
-
-%s
-
 `
 
 //NewAddSolutionCommand adds everything that written after --solution or --solution flag
