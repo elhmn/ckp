@@ -63,7 +63,7 @@ func findCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 
 	scripts := storeData.Scripts
 
-	_, result, err := conf.Printers.SelectScriptEntry(scripts)
+	_, result, err := conf.Printers.SelectScriptEntry(scripts, store.EntryTypeAll)
 	if err != nil {
 		return fmt.Errorf("prompt failed %v", err)
 	}

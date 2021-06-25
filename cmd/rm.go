@@ -87,7 +87,7 @@ func rmCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
 
-	index, err := getScriptEntryIndex(conf, storeData.Scripts, entryID)
+	index, err := getScriptEntryIndex(conf, storeData.Scripts, entryID, store.EntryTypeAll)
 	if err != nil {
 		return fmt.Errorf("failed to get script `%s` entry index: %s", entryID, err)
 	}
@@ -125,10 +125,10 @@ func removeScriptEntry(scripts []store.Script, index int) []store.Script {
 	return append(scripts[:index], scripts[index+1:]...)
 }
 
-func getScriptEntryIndex(conf config.Config, scripts []store.Script, entryID string) (int, error) {
+func getScriptEntryIndex(conf config.Config, scripts []store.Script, entryID string, entryType string) (int, error) {
 	if entryID == "" {
 		conf.Spin.Stop()
-		index, _, err := conf.Printers.SelectScriptEntry(scripts)
+		index, _, err := conf.Printers.SelectScriptEntry(scripts, entryType)
 		if err != nil {
 			return index, fmt.Errorf("failed to select entry: %s", err)
 		}

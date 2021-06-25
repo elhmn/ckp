@@ -15,7 +15,7 @@ var defaultPrinters = Printers{}
 
 type IPrinters interface {
 	Confirm(message string) bool
-	SelectScriptEntry(scripts []store.Script) (int, string, error)
+	SelectScriptEntry(scripts []store.Script, entryType string) (int, string, error)
 }
 
 type Printers struct{}
@@ -57,15 +57,21 @@ func Confirm(message string) bool {
 	return defaultPrinters.Confirm(message)
 }
 
-func SelectScriptEntry(scripts []store.Script) (int, string, error) {
-	return defaultPrinters.SelectScriptEntry(scripts)
+func SelectScriptEntry(scripts []store.Script, entryType string) (int, string, error) {
+	return defaultPrinters.SelectScriptEntry(scripts, entryType)
 }
 
 //SelectScriptEntry prompt a search
 //returns the selected entry index
-func (p Printers) SelectScriptEntry(scripts []store.Script) (int, string, error) {
+func (p Printers) SelectScriptEntry(scripts []store.Script, entryType string) (int, string, error) {
 	searchScript := func(input string, index int) bool {
 		s := scripts[index]
+		if entryType == store.EntryTypeCode {
+			return s.Code.Content != "" && DoesScriptContain(s, input)
+		} else if entryType == store.EntryTypeSolution {
+			return s.Solution.Content != "" && DoesScriptContain(s, input)
+		}
+
 		return DoesScriptContain(s, input)
 	}
 

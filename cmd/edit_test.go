@@ -33,7 +33,7 @@ func TestEditCommand(t *testing.T) {
 			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
-			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any()).Return(0, "", nil),
+			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any(), store.EntryTypeAll).Return(0, "", nil),
 		)
 
 		command := cmd.NewEditCommand(conf)
@@ -94,7 +94,7 @@ func TestEditCommand(t *testing.T) {
 			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "add", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "commit", "-m", "ckp: add store"),
-			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any()).Return(1, "", nil),
+			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any(), store.EntryTypeAll).Return(1, "", nil),
 		)
 
 		command := cmd.NewEditCommand(conf)
@@ -149,7 +149,7 @@ func TestEditCommand(t *testing.T) {
 			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "pull", "--rebase", "origin", "main"),
-			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any()).Return(0, "", nil),
+			mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any(), store.EntryTypeAll).Return(0, "", nil),
 			mockedExec.EXPECT().OpenEditor(gomock.Any(), gomock.Any()).Return(nil),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "fetch", "origin", "main"),
 			mockedExec.EXPECT().DoGit(gomock.Any(), "diff", "origin/main", "--", gomock.Any()),

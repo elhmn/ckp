@@ -19,6 +19,12 @@ const (
 `
 )
 
+const (
+	EntryTypeCode     = "code"
+	EntryTypeSolution = "solution"
+	EntryTypeAll      = ""
+)
+
 //Store defines the store.yaml file structure
 type Store struct {
 	Scripts []Script `json:"scripts,omitempty" yaml:"scripts,omitempty"`
