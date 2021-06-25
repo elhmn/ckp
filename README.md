@@ -55,15 +55,25 @@ $> ckp init git@github.com:elhmn/store.git
 
 This will create a `~/.ckp` folder, and clone the storage repository
 
+#### How to set your text editor
+
+Vim is the default text editor to set use a different code editor you might need to create a file `~/.ckp/config.yaml` file,
+then open the file and set the `editor` field.
+
+```yaml
+editor: nano
+```
+
+
 #### How to `Add` your scripts and solutions
 
-The `add code` command will store your script as a code entry in ckp
+The `add code` command will store your script as a code entry in ckp.
 
 ```sh
 $> ckp add code 'echo say hi!' --alias="sayHi" --comment="a script that says hi"
 ```
 
-The `add solution` command will store your script as a solution entry in ckp
+The `add solution` command will store your script as a solution entry in ckp.
 
 ```sh
 $> ckp add solution 'https://career-ladders.dev/engineering/' --comment="carreer ladders"
@@ -80,7 +90,7 @@ $> ckp add history --skip-secrets
 
 #### How to `Push` your scripts to your remote storage repository
 
-The `push` command will be commited and pushed to your remote repoitory
+The `push` command will be commited and pushed to your remote repoitory.
 
 ```sh
 $> ckp push
@@ -88,7 +98,7 @@ $> ckp push
 
 #### How to `Pull` your scripts from your remote storage repository
 
-The `pull` command will pull changes from your remote storage repository
+The `pull` command will pull changes from your remote storage repository.
 
 ```sh
 $> ckp pull
@@ -96,13 +106,13 @@ $> ckp pull
 
 #### How to `Find` a script or solution
 
-The `find` command will prompt a search and selection UI, that can be used to find
+The `find` command will prompt a search and selection UI, that can be used to find.
 
 ```sh
 $> ckp find
 ```
 
-To find a script in your history
+To find a script in your history.
 
 ```sh
 $> ckp find --from-history
@@ -111,13 +121,13 @@ $> ckp find --from-history
 
 #### How to `Run` a script or solution
 
-The `run` command will prompt a search and selection UI, that can be used to find and run a specific script
+The `run` command will prompt a search and selection UI, that can be used to find and run a specific script.
 
 ```sh
 $> ckp run
 ```
 
-To run a script from your history
+To run a script from your history.
 
 ```sh
 $> ckp run --from-history
@@ -126,13 +136,13 @@ $> ckp run --from-history
 
 #### How to `Remove` a script or solution
 
-The `rm` command will prompt a search and selection UI, that can be used to find and run a specific script
+The `rm` command will prompt a search and selection UI, that can be used to find and run a specific script.
 
 ```sh
 $> ckp rm
 ```
 
-To remove a script from your history
+To remove a script from your history.
 
 ```sh
 $> ckp rm --from-history
