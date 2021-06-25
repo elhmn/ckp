@@ -127,7 +127,7 @@ func addCodeCommand(cmd *cobra.Command, args []string, conf config.Config) error
 			return fmt.Errorf("failed to delete file %s: %s", tempFile, err)
 		}
 
-		return fmt.Errorf("An identical record was found in the storage, please try `ckp edit --id %s`", script.ID)
+		return fmt.Errorf("An identical record was found in the storage, please try `ckp edit %s`", script.ID)
 	}
 
 	//Add new script entry in the `Store` struct

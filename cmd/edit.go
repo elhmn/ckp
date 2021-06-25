@@ -80,6 +80,7 @@ func NewEditCommand(conf config.Config) *cobra.Command {
 	command.PersistentFlags().StringP("alias", "a", "", `ckp edit -a <alias>`)
 	command.PersistentFlags().StringP("code", "c", "", `ckp edit -c <code>`)
 	command.PersistentFlags().StringP("solution", "s", "", `ckp edit -s <solution>`)
+	command.PersistentFlags().BoolP("interactive", "i", false, `open a text editor`)
 	return command
 }
 
@@ -96,6 +97,11 @@ func editCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	fromHistory, err := flags.GetBool("from-history")
 	if err != nil {
 		return fmt.Errorf("could not parse `fromHistory` flag: %s", err)
+	}
+
+	isInteractive, err := flags.GetBool("interactive")
+	if err != nil {
+		return fmt.Errorf("could not parse `interactive` flag: %s", err)
 	}
 
 	//Setup spinner
@@ -139,17 +145,39 @@ func editCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 		return fmt.Errorf("failed to get script `%s` entry index: %s", entryID, err)
 	}
 
+	script, err := createNewEntry(flags, storeData.Scripts[index])
+	if err != nil {
+		return fmt.Errorf("failed to create new script entry: %s", err)
+	}
+
 	//if it is an interactive update
-	if len(args) == 0 {
-		s, err := getNewEntryDataFromFile(conf, storeData.Scripts[index], EntryTemplateType)
+	if len(args) == 0 || isInteractive {
+		conf.Spin.Stop()
+		s, err := getNewEntryDataFromFile(conf, script, EntryTemplateType)
 		if err != nil {
 			return fmt.Errorf("failed to get new entry from the editor %s", err)
 		}
-		storeData.Scripts[index] = s
+
+		//Generate an ID for the newly added script
+		s.ID, err = store.GenereateIdempotentID(s.Code.Content, s.Comment, s.Code.Alias, s.Solution.Content)
+		if err != nil {
+			return fmt.Errorf("failed to generate idem potent ID: %s", err)
+		}
+
+		script.ID = s.ID
+		script.Code = s.Code
+		script.Solution = s.Solution
+		script.Comment = s.Comment
+		conf.Spin.Start()
+	}
+
+	//Check if entry already exist
+	if storeData.EntryAlreadyExist(script.ID) {
+		return fmt.Errorf("An identical record was found in the storage, please try `ckp edit %s`", script.ID)
 	}
 
 	//Remove script entry
-	storeData.Scripts, err = editScriptEntry(flags, storeData.Scripts, index)
+	storeData.Scripts, err = editScriptEntry(storeData.Scripts, script, index)
 	if err != nil {
 		return fmt.Errorf("failed to edit script entry: %s", err)
 	}
@@ -181,12 +209,7 @@ func editCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 	return nil
 }
 
-func editScriptEntry(flags *pflag.FlagSet, scripts []store.Script, index int) ([]store.Script, error) {
-	script, err := createNewEntry(flags, scripts[index])
-	if err != nil {
-		return scripts, fmt.Errorf("failed to create new script entry: %s", err)
-	}
-
+func editScriptEntry(scripts []store.Script, script store.Script, index int) ([]store.Script, error) {
 	return append(scripts[:index], append(scripts[index+1:], script)...), nil
 }
 
@@ -246,29 +269,18 @@ func createNewEntry(flags *pflag.FlagSet, script store.Script) (store.Script, er
 		return store.Script{}, fmt.Errorf("failed to generate idem potent id: %s", err)
 	}
 
-	if code != "" {
-		return store.Script{
-			ID:           id,
-			Comment:      comment,
-			CreationTime: timeNow,
-			UpdateTime:   timeNow,
-			Code: store.Code{
-				Content: code,
-				Alias:   alias,
-			},
-			Solution: store.Solution{},
-		}, nil
-	}
-
 	return store.Script{
 		ID:           id,
 		Comment:      comment,
 		CreationTime: timeNow,
 		UpdateTime:   timeNow,
+		Code: store.Code{
+			Content: code,
+			Alias:   alias,
+		},
 		Solution: store.Solution{
 			Content: solution,
 		},
-		Code: store.Code{},
 	}, nil
 }
 
