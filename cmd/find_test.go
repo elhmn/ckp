@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/elhmn/ckp/cmd"
+	"github.com/elhmn/ckp/internal/store"
 	"github.com/elhmn/ckp/mocks"
 	"github.com/golang/mock/gomock"
 )
@@ -15,7 +16,7 @@ func TestFindComment(t *testing.T) {
 		mockedPrinters := conf.Printers.(*mocks.MockIPrinters)
 
 		//Specify expectations
-		mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any())
+		mockedPrinters.EXPECT().SelectScriptEntry(gomock.Any(), store.EntryTypeAll)
 
 		//setup temporary folder
 		if err := setupFolder(conf); err != nil {

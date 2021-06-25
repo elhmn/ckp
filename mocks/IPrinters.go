@@ -49,9 +49,9 @@ func (mr *MockIPrintersMockRecorder) Confirm(message interface{}) *gomock.Call {
 }
 
 // SelectScriptEntry mocks base method.
-func (m *MockIPrinters) SelectScriptEntry(scripts []store.Script) (int, string, error) {
+func (m *MockIPrinters) SelectScriptEntry(scripts []store.Script, entryType string) (int, string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SelectScriptEntry", scripts)
+	ret := m.ctrl.Call(m, "SelectScriptEntry", scripts, entryType)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(string)
 	ret2, _ := ret[2].(error)
@@ -59,7 +59,7 @@ func (m *MockIPrinters) SelectScriptEntry(scripts []store.Script) (int, string, 
 }
 
 // SelectScriptEntry indicates an expected call of SelectScriptEntry.
-func (mr *MockIPrintersMockRecorder) SelectScriptEntry(scripts interface{}) *gomock.Call {
+func (mr *MockIPrintersMockRecorder) SelectScriptEntry(scripts, entryType interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectScriptEntry", reflect.TypeOf((*MockIPrinters)(nil).SelectScriptEntry), scripts)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SelectScriptEntry", reflect.TypeOf((*MockIPrinters)(nil).SelectScriptEntry), scripts, entryType)
 }

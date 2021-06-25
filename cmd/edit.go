@@ -140,7 +140,7 @@ func editCommand(cmd *cobra.Command, args []string, conf config.Config) error {
 		return fmt.Errorf("failed to load the store: %s", err)
 	}
 
-	index, err := getScriptEntryIndex(conf, storeData.Scripts, entryID)
+	index, err := getScriptEntryIndex(conf, storeData.Scripts, entryID, store.EntryTypeAll)
 	if err != nil {
 		return fmt.Errorf("failed to get script `%s` entry index: %s", entryID, err)
 	}
