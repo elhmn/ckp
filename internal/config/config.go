@@ -8,6 +8,7 @@ import (
 	"github.com/elhmn/ckp/internal/exec"
 	"github.com/elhmn/ckp/internal/printers"
 	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -21,6 +22,7 @@ const (
 
 //Config contains the entire cli dependencies
 type Config struct {
+	Viper            viper.Viper
 	Exec             exec.IExec
 	CKPDir           string
 	CKPStorageFolder string
@@ -43,7 +45,7 @@ type Config struct {
 
 //NewDefaultConfig creates a new default config
 func NewDefaultConfig() Config {
-	return Config{
+	conf := Config{
 		Exec:             exec.NewExec(),
 		Spin:             printers.NewSpinner(),
 		Printers:         printers.NewPrinters(),
@@ -54,6 +56,28 @@ func NewDefaultConfig() Config {
 		MainBranch:       MainBranch,
 		WorkingBranch:    "working-" + MainBranch,
 	}
+
+	conf.Viper = setupViper(conf)
+	return conf
+}
+
+func setupViper(conf Config) viper.Viper {
+	v := viper.New()
+	v.SetConfigName("config")
+	v.SetConfigType("yaml")
+
+	dir, err := GetDirPath(conf)
+	if err != nil {
+		return viper.Viper{}
+	}
+
+	v.AddConfigPath(dir)
+	err = v.ReadInConfig()
+	if err != nil {
+		return viper.Viper{}
+	}
+
+	return *v
 }
 
 //GetStoreFilePath get the store file path from config
