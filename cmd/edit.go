@@ -309,8 +309,9 @@ func getNewEntryDataFromFile(conf config.Config, origEntry store.Script, templat
 		return s, fmt.Errorf("failed to write to file %s: %s", destination, err)
 	}
 
+	editor := conf.Viper.GetString("editor")
 	//Open and edit that file
-	err = conf.Exec.OpenEditor("", destination)
+	err = conf.Exec.OpenEditor(editor, destination)
 	if err != nil {
 		return s, err
 	}
