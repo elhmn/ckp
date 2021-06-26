@@ -57,8 +57,8 @@ This will create a `~/.ckp` folder, and clone the storage repository
 
 #### How to set your text editor
 
-Vim is the default text editor to set use a different code editor you might need to create a file `~/.ckp/config.yaml` file,
-then open the file and set the `editor` field.
+Vim is the default text editor to use a different code editor you might need to create a `~/.ckp/config.yaml` file,
+then open the file and set the `editor` field as follows.
 
 ```yaml
 editor: nano
