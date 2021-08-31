@@ -7,7 +7,7 @@ on:
 
 jobs:
   generate-tag-from-semver:
-    if: "!contains(github.event.head_commit.author, 'goreleaserbot')"
+    if: "!contains(github.event.head_commit.author.name, 'goreleaserbot')"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
