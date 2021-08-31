@@ -8,7 +8,6 @@ import (
 )
 
 //This version will be set by a goreleaser ldflag
-var version = "0.0.0.dev"
 var versionString = `Version: %s
 Build by elhmn
 Support osscameroon here https://opencollective.com/osscameroon
@@ -31,6 +30,6 @@ func NewVersionCommand(conf config.Config) *cobra.Command {
 }
 
 func versionCommand(conf config.Config) error {
-	fmt.Fprintf(conf.OutWriter, versionString, version)
+	fmt.Fprintf(conf.OutWriter, versionString, conf.Version)
 	return nil
 }

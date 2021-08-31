@@ -7,8 +7,10 @@ import (
 	"github.com/elhmn/ckp/internal/config"
 )
 
+var version = "0.0.0.dev"
+
 func main() {
-	conf := config.NewDefaultConfig()
+	conf := config.NewDefaultConfig(config.Options{Version: version})
 	command := cmd.NewCKPCommand(conf)
 
 	err := command.Execute()

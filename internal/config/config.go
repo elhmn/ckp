@@ -22,6 +22,7 @@ const (
 
 //Config contains the entire cli dependencies
 type Config struct {
+	Version          string
 	Viper            viper.Viper
 	Exec             exec.IExec
 	CKPDir           string
@@ -43,8 +44,13 @@ type Config struct {
 	ErrWriter io.Writer
 }
 
+//Options config options
+type Options struct {
+	Version string
+}
+
 //NewDefaultConfig creates a new default config
-func NewDefaultConfig() Config {
+func NewDefaultConfig(opt Options) Config {
 	conf := Config{
 		Exec:             exec.NewExec(),
 		Spin:             printers.NewSpinner(),
@@ -55,6 +61,7 @@ func NewDefaultConfig() Config {
 		CKPStorageFolder: "repo",
 		MainBranch:       MainBranch,
 		WorkingBranch:    "working-" + MainBranch,
+		Version:          opt.Version,
 	}
 
 	conf.Viper = setupViper(conf)
