@@ -11,22 +11,22 @@ class Ckp < Formula
   on_macos do
     if Hardware::CPU.intel?
       url "https://github.com/elhmn/ckp/releases/download/v0.3.0/ckp_0.3.0_darwin_amd64.tar.gz"
-      sha256 "fdd52ff8e5d4f0a18bc3f485999536782d2d1b913b69bfc8c024067730ebc754"
+      sha256 "943f40f108a122c943afbea5c706e14a36fe801c8631b9255287ffda98a739dd"
     end
     if Hardware::CPU.arm?
       url "https://github.com/elhmn/ckp/releases/download/v0.3.0/ckp_0.3.0_darwin_arm64.tar.gz"
-      sha256 "bace3ec3a4c19d610f47470592c75091707f7ad8aa891adaf2412a0a502b19de"
+      sha256 "eefce98b67d692808d39f2b2b808bf202217235f2f0904e66bc16b19cb2be409"
     end
   end
 
   on_linux do
     if Hardware::CPU.intel?
       url "https://github.com/elhmn/ckp/releases/download/v0.3.0/ckp_0.3.0_linux_amd64.tar.gz"
-      sha256 "859f3cbdf59ce4a87e25780520e6a5468ab3fa84e997e74b57079ae94dec02e5"
+      sha256 "42def17f63c1ddcc878ebfea642fe49e1dd23eac295f512e9a35e0d8313a76a9"
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
       url "https://github.com/elhmn/ckp/releases/download/v0.3.0/ckp_0.3.0_linux_arm64.tar.gz"
-      sha256 "743cadb65b63775a72e8b3909a84a990c9923dbb379a7e4f27a70bc1b1ba6ad6"
+      sha256 "d7c0582ac1910e21a1e7665e146d1cb9714d846b78834246649671a0bb9f2b5c"
     end
   end
 
