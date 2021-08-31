@@ -5,28 +5,28 @@
 class Ckp < Formula
   desc ""
   homepage "https://github.com/elhmn/ckp"
-  version "0.6.0"
+  version "0.7.0"
   bottle :unneeded
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/elhmn/ckp/releases/download/v0.6.0/ckp_0.6.0_darwin_amd64.tar.gz"
-      sha256 "8a96531d362cb8a52b55de793f0318056ac411ffbd10e975c0b253667a9c7c84"
+      url "https://github.com/elhmn/ckp/releases/download/v0.7.0/ckp_0.7.0_darwin_amd64.tar.gz"
+      sha256 "a6cdf6ce3e2efaea1ec265befe40af215d7a1d962fd3dc6f08d2bafb658f91e9"
     end
     if Hardware::CPU.arm?
-      url "https://github.com/elhmn/ckp/releases/download/v0.6.0/ckp_0.6.0_darwin_arm64.tar.gz"
-      sha256 "4ff0ded8d03fc52333aeabdc71759de4cfdac0e357446586c8744b614a2eb727"
+      url "https://github.com/elhmn/ckp/releases/download/v0.7.0/ckp_0.7.0_darwin_arm64.tar.gz"
+      sha256 "ecedd09b03edaccb839256d19d1bb5fd448f3baee41308c8ed2053ef3d801f5a"
     end
   end
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/elhmn/ckp/releases/download/v0.6.0/ckp_0.6.0_linux_amd64.tar.gz"
-      sha256 "e97883da5d249364e0ffe34db36912cc38a2ea6b4dfbd2b04277bb0e34dbed8a"
+      url "https://github.com/elhmn/ckp/releases/download/v0.7.0/ckp_0.7.0_linux_amd64.tar.gz"
+      sha256 "33faaab3221b9f460e9477b0b31a01c73c0fb56157ca4607e78ab3b91709615b"
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/elhmn/ckp/releases/download/v0.6.0/ckp_0.6.0_linux_arm64.tar.gz"
-      sha256 "96b876a48823d88ebd7bcdfbcc29e3640b74df50e882b90952fe2ce1054e1648"
+      url "https://github.com/elhmn/ckp/releases/download/v0.7.0/ckp_0.7.0_linux_arm64.tar.gz"
+      sha256 "aa7f51f017d57dd76795928bfa32d293cc4247c09beb2433f344ec1f120237a0"
     end
   end
 
