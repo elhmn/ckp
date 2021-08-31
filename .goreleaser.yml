@@ -1,3 +1,8 @@
+builds:
+  -
+     ldflags:
+       - -s -w -X cmd.version={{.Version}} -X cmd.commit={{.Commit}} -X cmd.date={{.Date}} -X cmd.builtBy=elhmn
+
 brews:
   - tap:
       owner: elhmn
