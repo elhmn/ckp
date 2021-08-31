@@ -23,5 +23,6 @@ func NewCKPCommand(config config.Config) *cobra.Command {
 	ckpCommand.AddCommand(NewRmCommand(config))
 	ckpCommand.AddCommand(NewEditCommand(config))
 	ckpCommand.AddCommand(NewRunCommand(config))
+	ckpCommand.AddCommand(NewVersionCommand(config))
 	return ckpCommand
 }
