@@ -1,0 +1,26 @@
+name: Generate tags
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  generate-tag-from-semver:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.HOMEBREW_GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install svu
+        run: |
+          echo 'deb [trusted=yes] https://apt.fury.io/caarlos0/ /' | sudo tee /etc/apt/sources.list.d/caarlos0.list
+          sudo apt update
+          sudo apt install svu
+
+      - name: Create next tag
+        run: |
+          tagname=$(svu next); git tag $tagname && git push origin $tagname
