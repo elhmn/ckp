@@ -26,7 +26,7 @@ func TestVersionCommand(t *testing.T) {
 		}
 
 		got := writer.String()
-		exp := "Version: 0.0.0.dev\nBuild by elhmn\nSupport osscameroon here https://opencollective.com/osscameroon\n"
+		exp := "Version: 0.0.0+dev\nBuild by elhmn\nSupport osscameroon here https://opencollective.com/osscameroon\n"
 		assert.Contains(t, got, exp)
 	})
 }

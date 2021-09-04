@@ -19,7 +19,7 @@ func createConfig(t *testing.T) config.Config {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	conf := config.NewDefaultConfig(config.Options{Version: "0.0.0.dev"})
+	conf := config.NewDefaultConfig(config.Options{Version: "0.0.0+dev"})
 	conf.Exec = mocks.NewMockIExec(mockCtrl)
 	conf.Printers = mocks.NewMockIPrinters(mockCtrl)
 
