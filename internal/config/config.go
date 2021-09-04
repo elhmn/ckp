@@ -29,6 +29,7 @@ type Config struct {
 	CKPStorageFolder string
 	Spin             printers.ISpinner
 	Printers         printers.IPrinters
+	Repository       string
 
 	//MainBranch is a your remote repository main branch
 	MainBranch string
@@ -62,6 +63,7 @@ func NewDefaultConfig(opt Options) Config {
 		MainBranch:       MainBranch,
 		WorkingBranch:    "working-" + MainBranch,
 		Version:          opt.Version,
+		Repository:       "elhmn/ckp",
 	}
 
 	conf.Viper = setupViper(conf)
