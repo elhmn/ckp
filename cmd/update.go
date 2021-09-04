@@ -39,14 +39,14 @@ func confirmAndUpdate(conf config.Config) error {
 
 	v := semver.MustParse(conf.Version)
 	if !found || latest.Version.LTE(v) {
-		fmt.Fprintf(conf.OutWriter, "Current version is the latest")
+		fmt.Fprintf(conf.OutWriter, "Current version is the latest\n")
 		return nil
 	}
 
 	fmt.Fprintf(conf.OutWriter, "Do you want to update to %s ? (y/n): \n", latest.Version)
 	input, err := bufio.NewReader(os.Stdin).ReadString('\n')
 	if err != nil || (input != "y\n" && input != "n\n") {
-		fmt.Fprintf(conf.OutWriter, "Invalid input")
+		fmt.Fprintf(conf.OutWriter, "Invalid input\n")
 		return nil
 	}
 	if input == "n\n" {
@@ -61,6 +61,6 @@ func confirmAndUpdate(conf config.Config) error {
 		return fmt.Errorf("Error occurred while updating binary: %s", err)
 	}
 
-	fmt.Fprintf(conf.OutWriter, "Successfully updated to version %s", latest.Version)
+	fmt.Fprintf(conf.OutWriter, "Successfully updated to version %s\n", latest.Version)
 	return nil
 }
