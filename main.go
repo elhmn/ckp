@@ -7,7 +7,7 @@ import (
 	"github.com/elhmn/ckp/internal/config"
 )
 
-var version = "0.0.0.dev"
+var version = "0.0.0+dev"
 
 func main() {
 	conf := config.NewDefaultConfig(config.Options{Version: version})
