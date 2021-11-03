@@ -55,6 +55,10 @@ func setupFolder(conf config.Config) error {
 		return err
 	}
 
+	if err = files.CopyFileToHomeDirectory(conf.CKPDir+"/"+config.HistoryFileName, "../fixtures/2mb_store.yaml"); err != nil {
+		return err
+	}
+
 	return nil
 }
 

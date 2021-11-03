@@ -59,4 +59,30 @@ func TestListCommand(t *testing.T) {
 			t.Errorf("Error: failed with %s", err)
 		}
 	})
+
+	t.Run("make sure that is runs successfully on history, with --all flag set", func(t *testing.T) {
+		conf := createConfig(t)
+		writer := &bytes.Buffer{}
+		conf.OutWriter = writer
+
+		if err := setupFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
+		command := cmd.NewListCommand(conf)
+		//Set writer
+		command.SetOutput(conf.OutWriter)
+
+		//Set args
+		command.SetArgs([]string{"--all", "--from-history"})
+
+		err := command.Execute()
+		if err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+
+		if err := deleteFolder(conf); err != nil {
+			t.Errorf("Error: failed with %s", err)
+		}
+	})
 }
