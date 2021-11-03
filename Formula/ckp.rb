@@ -5,32 +5,43 @@
 class Ckp < Formula
   desc ""
   homepage "https://github.com/elhmn/ckp"
-  version "0.17.1"
-  bottle :unneeded
+  version "0.19.0"
 
   on_macos do
-    if Hardware::CPU.intel?
-      url "https://github.com/elhmn/ckp/releases/download/v0.17.1/ckp_0.17.1_darwin_amd64.tar.gz"
-      sha256 "6e40c0668b8a6258f854f71b0594907952b2b1d61ed3410c35b9277e2d340b06"
-    end
     if Hardware::CPU.arm?
-      url "https://github.com/elhmn/ckp/releases/download/v0.17.1/ckp_0.17.1_darwin_arm64.tar.gz"
-      sha256 "9dd3e9de8dddbeac5b423ced46aada372a000415d1d6d94d6565b73ac29e1247"
+      url "https://github.com/elhmn/ckp/releases/download/v0.19.0/ckp_0.19.0_darwin_arm64.tar.gz"
+      sha256 "c19a09be952b6f7ad3b6227ae1f7f5fab52308587914d0bf0bb1be35ff42cb26"
+
+      def install
+        bin.install "ckp"
+      end
+    end
+    if Hardware::CPU.intel?
+      url "https://github.com/elhmn/ckp/releases/download/v0.19.0/ckp_0.19.0_darwin_amd64.tar.gz"
+      sha256 "506169508d593429054e9cd1a223bd57740bd9f7b1fecad54cde2d083aea76a2"
+
+      def install
+        bin.install "ckp"
+      end
     end
   end
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/elhmn/ckp/releases/download/v0.17.1/ckp_0.17.1_linux_amd64.tar.gz"
-      sha256 "9c1ff2cf09254c5c5b3758f84ff1d521ac48f21d94ee3b9347da268f95a0c474"
+      url "https://github.com/elhmn/ckp/releases/download/v0.19.0/ckp_0.19.0_linux_amd64.tar.gz"
+      sha256 "d8b107ae6f132fae74f424e770b6271af8b7e655ca4a4a95cc2ee5bfe37a7ef0"
+
+      def install
+        bin.install "ckp"
+      end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/elhmn/ckp/releases/download/v0.17.1/ckp_0.17.1_linux_arm64.tar.gz"
-      sha256 "79463e1fbe7170266cc45325dc1662174a8081bb312bf16dfaa705e5c806d2fe"
-    end
-  end
+      url "https://github.com/elhmn/ckp/releases/download/v0.19.0/ckp_0.19.0_linux_arm64.tar.gz"
+      sha256 "c29a70c732ea401c7137d24b7cbdf3ff2fc39fb6be782040928f596cfde369b4"
 
-  def install
-    bin.install "ckp"
+      def install
+        bin.install "ckp"
+      end
+    end
   end
 end
