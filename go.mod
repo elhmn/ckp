@@ -4,14 +4,24 @@ go 1.16
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/briandowns/spinner v1.12.0
-	github.com/golang/mock v1.5.0
-	github.com/manifoldco/promptui v0.8.0
+	github.com/briandowns/spinner v1.16.0
+	github.com/fatih/color v1.13.0 // indirect
+	github.com/golang/mock v1.6.0
+	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/manifoldco/promptui v0.9.0
+	github.com/mattn/go-colorable v0.1.11 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/rhysd/go-github-selfupdate v1.2.3
-	github.com/spf13/cobra v1.1.3
+	github.com/spf13/cobra v1.2.1
 	github.com/spf13/pflag v1.0.5
-	github.com/spf13/viper v1.8.1
+	github.com/spf13/viper v1.9.0
 	github.com/stretchr/testify v1.7.0
+	github.com/ulikunitz/xz v0.5.10 // indirect
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
+	golang.org/x/net v0.0.0-20211101193420-4a448f8816b3 // indirect
+	golang.org/x/oauth2 v0.0.0-20211028175245-ba495a64dcb5 // indirect
+	golang.org/x/sys v0.0.0-20211102192858-4dd72447c267 // indirect
+	golang.org/x/text v0.3.7 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
