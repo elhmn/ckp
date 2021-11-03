@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/elhmn/ckp/internal/config"
@@ -113,41 +115,56 @@ func getField(field, value string) string {
 	return ""
 }
 
-func listScripts(scripts []store.Script, isCode, isSolution, shouldListAll bool, limit int) string {
+func sprintScript(wg *sync.WaitGroup, output []string, index int, s store.Script, isCode, isSolution bool) {
+	defer wg.Done()
+
 	list := ""
+	//if the script is a solution
+	if s.Solution.Content != "" {
+		if isCode {
+			return
+		}
+		list += getField("ID", s.ID)
+		list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
+		list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
+		list += "  Type: Solution\n"
+		list += getField("  Comment", s.Comment)
+		list += getField("  Solution", s.Solution.Content)
+	} else {
+		if isSolution {
+			return
+		}
+		list += getField("ID", s.ID)
+		list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
+		list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
+		list += "  Type: Code\n"
+		list += getField("  Alias", s.Code.Alias)
+		list += getField("  Comment", s.Comment)
+		list += getField("  Code", s.Code.Content)
+	}
+	list += "\n"
+
+	output[index] = list
+}
+
+func listScripts(scripts []store.Script, isCode, isSolution, shouldListAll bool, limit int) string {
 	size := len(scripts)
+	wg := sync.WaitGroup{}
 
 	//if --all was specified set the limit to the size of the list of scripts
 	if shouldListAll {
 		limit = size
 	}
 
+	output := make([]string, limit)
+
+	//Buffer channel
 	for i := 0; i < limit && i < size; i++ {
+		wg.Add(1)
 		s := scripts[i]
-		//if the script is a solution
-		if s.Solution.Content != "" {
-			if isCode {
-				continue
-			}
-			list += getField("ID", s.ID)
-			list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
-			list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
-			list += "  Type: Solution\n"
-			list += getField("  Comment", s.Comment)
-			list += getField("  Solution", s.Solution.Content)
-		} else {
-			if isSolution {
-				continue
-			}
-			list += getField("ID", s.ID)
-			list += getField("CreationTime", s.CreationTime.Format(time.RFC1123))
-			list += getField("UpdateTime", s.UpdateTime.Format(time.RFC1123))
-			list += "  Type: Code\n"
-			list += getField("  Alias", s.Code.Alias)
-			list += getField("  Comment", s.Comment)
-			list += getField("  Code", s.Code.Content)
-		}
-		list += "\n"
+		go sprintScript(&wg, output, i, s, isCode, isSolution)
 	}
-	return list
+	wg.Wait()
+
+	return strings.Join(output, "")
 }
