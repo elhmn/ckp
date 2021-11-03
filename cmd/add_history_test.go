@@ -73,12 +73,12 @@ func TestAddHistoryCommand(t *testing.T) {
 		}
 
 		//Delete history tmp files
-		if err := files.DeleteFileFromHomeDirectory(history.BashHistoryFile); err != nil {
-			t.Error(err)
-		}
-		if err := files.DeleteFileFromHomeDirectory(history.ZshHistoryFile); err != nil {
-			t.Error(err)
-		}
+		// 		if err := files.DeleteFileFromHomeDirectory(history.BashHistoryFile); err != nil {
+		// 			t.Error(err)
+		// 		}
+		// 		if err := files.DeleteFileFromHomeDirectory(history.ZshHistoryFile); err != nil {
+		// 			t.Error(err)
+		// 		}
 
 		//Restore history path
 		history.BashHistoryFile = origBashHistoryFile
