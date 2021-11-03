@@ -2,6 +2,7 @@ package cmd_test
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
 	"github.com/elhmn/ckp/cmd"
@@ -74,10 +75,11 @@ func TestAddHistoryCommand(t *testing.T) {
 
 		//Delete history tmp files
 		if err := files.DeleteFileFromHomeDirectory(history.BashHistoryFile); err != nil {
-			t.Error(err)
+			fmt.Printf("Failed to remove file: %s\n", err)
 		}
+
 		if err := files.DeleteFileFromHomeDirectory(history.ZshHistoryFile); err != nil {
-			t.Error(err)
+			fmt.Printf("Failed to remove file: %s\n", err)
 		}
 
 		//Restore history path
