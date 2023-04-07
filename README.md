@@ -1,5 +1,5 @@
 # codekeeper : (ckp)
-CLI that helps you store and reuse your common scripts and solutions from anywhere
+CLI that helps you store and reuse your history and one liner scripts from anywhere, better than gists
 
 ## Overview
 
