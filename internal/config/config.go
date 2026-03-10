@@ -16,6 +16,7 @@ const (
 	HistoryFileName          = "repo/history_store.yaml"
 	StoreTempFileName        = "repo/.temp_store.yaml"
 	StoreHistoryTempFileName = "repo/.temp_history_store.yaml"
+	AliasesFileName          = "ckp_aliases"
 
 	MainBranch = "main"
 )
@@ -153,4 +154,14 @@ func GetDirPath(conf Config) (string, error) {
 
 	dir := fmt.Sprintf("%s/%s", home, conf.CKPDir)
 	return dir, nil
+}
+
+//GetAliasesFilePath returns the path of the ckp aliases file
+func GetAliasesFilePath(conf Config) (string, error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return "", fmt.Errorf("failed to read home directory: %s", err)
+	}
+
+	return fmt.Sprintf("%s/%s/%s", home, conf.CKPDir, AliasesFileName), nil
 }
